@@ -29,7 +29,9 @@ class ActionCell: UICollectionViewCell {
             actions.map { action -> UIButton in
                 let button = UIButton()
                 button.setTitle(action.title, for: .normal)
-                button.setTitleColor(.darkText, for: .normal)
+                button.setTitleColor(.black, for: .normal)
+                button.setImage(action.image.withRenderingMode(.alwaysTemplate), for: .normal)
+                button.imageView?.tintColor = .black
                 button.backgroundColor = .white
                 button.layer.masksToBounds = true
                 button.layer.cornerRadius = 11.0
