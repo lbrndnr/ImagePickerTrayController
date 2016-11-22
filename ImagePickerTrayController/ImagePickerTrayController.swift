@@ -26,15 +26,16 @@ public class ImagePickerTrayController: UIViewController {
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.backgroundColor = .lightGray
+        collectionView.backgroundColor = UIColor(red: 209.0/255.0, green: 213.0/255.0, blue: 218.0/255.0, alpha: 1.0)
         collectionView.allowsMultipleSelection = true
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.alwaysBounceHorizontal = true
         
-        collectionView.register(ImageCell.self, forCellWithReuseIdentifier: NSStringFromClass(ImageCell.self))
+        collectionView.register(ActionCell.self, forCellWithReuseIdentifier: NSStringFromClass(ActionCell.self))
         collectionView.register(CameraCell.self, forCellWithReuseIdentifier: NSStringFromClass(CameraCell.self))
+        collectionView.register(ImageCell.self, forCellWithReuseIdentifier: NSStringFromClass(ImageCell.self))
         
         return collectionView
     }()
@@ -58,14 +59,24 @@ public class ImagePickerTrayController: UIViewController {
     
     fileprivate let imageSize: CGSize
     
+    fileprivate var actions = [ImagePickerAction]()
+    
+    fileprivate var sections: [Int] {
+        let actionSection = (actions.count > 0) ? 1 : 0
+        let cameraSection = 1
+        let assetSection = assets.count
+        
+        return [actionSection, cameraSection, assetSection]
+    }
+    
     // MARK: - Initialization
     
-    public init(height: CGFloat) {
-        self.height = height
+    public init() {
+        self.height = 216
         
         let numberOfRows = (UIDevice.current.userInterfaceIdiom == .pad) ? 3 : 2
         let side = round((self.height-2)/CGFloat(numberOfRows))
-        imageSize = CGSize(width: side, height: side)
+        self.imageSize = CGSize(width: side, height: side)
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -90,6 +101,12 @@ public class ImagePickerTrayController: UIViewController {
         super.viewWillAppear(animated)
         
         fetchAssets()
+    }
+    
+    // MARK: - Action
+    
+    public func add(action: ImagePickerAction) {
+        actions.append(action)
     }
     
     // MARK: - Images
@@ -162,26 +179,30 @@ public class ImagePickerTrayController: UIViewController {
 extension ImagePickerTrayController: UICollectionViewDataSource {
     
     public func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 2
+        return sections.count
     }
     
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        guard section == 1 else {
-            return 1
-        }
-        
-        return assets.count
+        return sections[section]
     }
     
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard indexPath.section == 1 else {
+        switch indexPath.section {
+        case 0:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NSStringFromClass(ActionCell.self), for: indexPath) as! ActionCell
+            cell.actions = actions
+            
+            return cell
+        case 1:
             return collectionView.dequeueReusableCell(withReuseIdentifier: NSStringFromClass(CameraCell.self), for: indexPath)
+        case 2:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NSStringFromClass(ImageCell.self), for: indexPath) as! ImageCell
+            requestImageForAsset(assets[indexPath.item]) { cell.imageView.image = $0 }
+            
+            return cell
+        default:
+            fatalError("More than 3 sections are invalid.")
         }
-        
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NSStringFromClass(ImageCell.self), for: indexPath) as! ImageCell
-        requestImageForAsset(assets[indexPath.item]) { cell.imageView.image = $0 }
-        
-        return cell
     }
     
 }
@@ -191,11 +212,16 @@ extension ImagePickerTrayController: UICollectionViewDataSource {
 extension ImagePickerTrayController: UICollectionViewDelegateFlowLayout {
     
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        guard indexPath.section == 0 else {
+        switch indexPath.section {
+        case 0:
+            return CGSize(width: 162, height: height)
+        case 1:
+            return CGSize(width: 150, height: height)
+        case 2:
             return imageSize
+        default:
+            return .zero
         }
-        
-        return CGSize(width: 150, height: 210)
     }
     
 }

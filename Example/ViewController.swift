@@ -30,7 +30,13 @@ class ViewController: UIViewController {
     // MARK: - Other Methods
     
     func presentImagePickerTray(_: UITapGestureRecognizer) {
-        let controller = ImagePickerTrayController(height: 216)
+        let controller = ImagePickerTrayController()
+        controller.add(action: .cameraAction { _ in
+            print("Show Camera")
+        })
+        controller.add(action: .libraryAction { _ in
+            print("Show Library")
+        })
         present(controller, animated: true, completion: nil)
     }
 

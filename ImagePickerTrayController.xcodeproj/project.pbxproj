@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4909255A1DE4E600001027EC /* ActionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 490925571DE4E600001027EC /* ActionCell.swift */; };
+		4909255B1DE4E600001027EC /* CameraCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 490925581DE4E600001027EC /* CameraCell.swift */; };
+		4909255C1DE4E600001027EC /* ImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 490925591DE4E600001027EC /* ImageCell.swift */; };
 		491D5EB41DE451CD007EC01A /* ImagePickerAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491D5EB31DE451CD007EC01A /* ImagePickerAction.swift */; };
 		4970E5261DB0DD400078ED23 /* ImagePickerTrayControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4970E5251DB0DD400078ED23 /* ImagePickerTrayControllerTests.swift */; };
 		4970E56D1DB0DE110078ED23 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4970E56C1DB0DE110078ED23 /* AppDelegate.swift */; };
@@ -17,8 +20,6 @@
 		4970E58F1DB0E0410078ED23 /* ImagePickerTrayController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4970E5881DB0E0410078ED23 /* ImagePickerTrayController.framework */; };
 		4970E5901DB0E0410078ED23 /* ImagePickerTrayController.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4970E5881DB0E0410078ED23 /* ImagePickerTrayController.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4970E5961DB0E0550078ED23 /* ImagePickerTrayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4970E5951DB0E0550078ED23 /* ImagePickerTrayController.swift */; };
-		498093781DB2829000617A0B /* ImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 498093771DB2829000617A0B /* ImageCell.swift */; };
-		4980937A1DB28E2B00617A0B /* CameraCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 498093791DB28E2B00617A0B /* CameraCell.swift */; };
 		498CCB0A1DB103FA00A970B1 /* AnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 498CCB091DB103FA00A970B1 /* AnimationController.swift */; };
 /* End PBXBuildFile section */
 
@@ -47,6 +48,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		490925571DE4E600001027EC /* ActionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActionCell.swift; sourceTree = "<group>"; };
+		490925581DE4E600001027EC /* CameraCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraCell.swift; sourceTree = "<group>"; };
+		490925591DE4E600001027EC /* ImageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageCell.swift; sourceTree = "<group>"; };
 		491D5EB31DE451CD007EC01A /* ImagePickerAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePickerAction.swift; sourceTree = "<group>"; };
 		4970E5211DB0DD400078ED23 /* ImagePickerTrayControllerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ImagePickerTrayControllerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4970E5251DB0DD400078ED23 /* ImagePickerTrayControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerTrayControllerTests.swift; sourceTree = "<group>"; };
@@ -61,8 +65,6 @@
 		4970E58A1DB0E0410078ED23 /* ImagePickerTrayController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImagePickerTrayController.h; sourceTree = "<group>"; };
 		4970E58B1DB0E0410078ED23 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4970E5951DB0E0550078ED23 /* ImagePickerTrayController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePickerTrayController.swift; sourceTree = "<group>"; };
-		498093771DB2829000617A0B /* ImageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageCell.swift; sourceTree = "<group>"; };
-		498093791DB28E2B00617A0B /* CameraCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraCell.swift; sourceTree = "<group>"; };
 		498CCB091DB103FA00A970B1 /* AnimationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnimationController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -92,6 +94,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		490925561DE4E600001027EC /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				490925571DE4E600001027EC /* ActionCell.swift */,
+				490925581DE4E600001027EC /* CameraCell.swift */,
+				490925591DE4E600001027EC /* ImageCell.swift */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
 		4970E5041DB0DD400078ED23 = {
 			isa = PBXGroup;
 			children = (
@@ -146,8 +158,7 @@
 			children = (
 				491D5EB31DE451CD007EC01A /* ImagePickerAction.swift */,
 				4970E5951DB0E0550078ED23 /* ImagePickerTrayController.swift */,
-				498093771DB2829000617A0B /* ImageCell.swift */,
-				498093791DB28E2B00617A0B /* CameraCell.swift */,
+				490925561DE4E600001027EC /* Cells */,
 				498CCB091DB103FA00A970B1 /* AnimationController.swift */,
 				4970E5971DB0E0620078ED23 /* Supporting Files */,
 			);
@@ -326,11 +337,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4980937A1DB28E2B00617A0B /* CameraCell.swift in Sources */,
 				498CCB0A1DB103FA00A970B1 /* AnimationController.swift in Sources */,
+				4909255A1DE4E600001027EC /* ActionCell.swift in Sources */,
 				491D5EB41DE451CD007EC01A /* ImagePickerAction.swift in Sources */,
 				4970E5961DB0E0550078ED23 /* ImagePickerTrayController.swift in Sources */,
-				498093781DB2829000617A0B /* ImageCell.swift in Sources */,
+				4909255B1DE4E600001027EC /* CameraCell.swift in Sources */,
+				4909255C1DE4E600001027EC /* ImageCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

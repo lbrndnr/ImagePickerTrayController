@@ -10,7 +10,22 @@ import Foundation
 
 public struct ImagePickerAction {
     
-    var title: String
-    var image: UIImage
+    public typealias Callback = (ImagePickerAction) -> ()
+    
+    public var title: String
+    public var image: UIImage
+    public var callback: Callback
+    
+    public static func cameraAction(with callback: @escaping Callback) -> ImagePickerAction {
+        return ImagePickerAction(title: NSLocalizedString("Camera", comment: "Image Picker Camera Action"), image: UIImage(), callback: callback)
+    }
+    
+    public static func libraryAction(with callback: @escaping Callback) -> ImagePickerAction {
+        return ImagePickerAction(title: NSLocalizedString("Photo Library", comment: "Image Picker Photo Library Action"), image: UIImage(), callback: callback)
+    }
+    
+    func call() {
+        callback(self)
+    }
     
 }
