@@ -26,19 +26,8 @@ class ActionCell: UICollectionViewCell {
             stackView.arrangedSubviews.forEach { stackView.removeArrangedSubview($0) }
         }
         didSet {
-            actions.map { action -> UIButton in
-                let button = UIButton()
-                button.setTitle(action.title, for: .normal)
-                button.setTitleColor(.black, for: .normal)
-                button.setImage(action.image.withRenderingMode(.alwaysTemplate), for: .normal)
-                button.imageView?.tintColor = .black
-                button.backgroundColor = .white
-                button.layer.masksToBounds = true
-                button.layer.cornerRadius = 11.0
-                button.addTarget(self, action: #selector(callAction(sender:)), for: .touchUpInside)
-                
-                return button
-            }.forEach { stackView.addArrangedSubview($0) }
+            actions.map { ActionButton(action: $0, target: self, selector: #selector(callAction(sender:))) }
+                   .forEach { stackView.addArrangedSubview($0) }
         }
     }
     
@@ -76,4 +65,43 @@ class ActionCell: UICollectionViewCell {
         }
     }
 
+}
+
+fileprivate class ActionButton: UIButton {
+    
+    // MARK: - Initialization
+    
+    init(action: ImagePickerAction, target: Any, selector: Selector) {
+        super.init(frame: .zero)
+        
+        setTitle(action.title, for: .normal)
+        setTitleColor(.black, for: .normal)
+        setImage(action.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        
+        imageView?.tintColor = .black
+        imageView?.contentMode = .bottom
+        
+        titleLabel?.textAlignment = .center
+        titleLabel?.font = .systemFont(ofSize: 14)
+        
+        backgroundColor = .white
+        layer.masksToBounds = true
+        layer.cornerRadius = 11.0
+        addTarget(target, action: selector, for: .touchUpInside)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - Layout
+    
+    fileprivate override func imageRect(forContentRect contentRect: CGRect) -> CGRect {
+        return contentRect.divided(atDistance: contentRect.midX, from: .minYEdge).slice
+    }
+    
+    fileprivate override func titleRect(forContentRect contentRect: CGRect) -> CGRect {
+        return contentRect.divided(atDistance: contentRect.midX, from: .minYEdge).remainder
+    }
+    
 }
