@@ -59,7 +59,7 @@ public class ImagePickerTrayController: UIViewController {
     
     fileprivate let imageSize: CGSize
     
-    fileprivate var actions = [ImagePickerAction]()
+    public fileprivate(set) var actions = [ImagePickerAction]()
     
     fileprivate var sections: [Int] {
         let actionSection = (actions.count > 0) ? 1 : 0

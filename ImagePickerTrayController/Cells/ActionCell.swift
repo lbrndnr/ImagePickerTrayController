@@ -22,12 +22,18 @@ class ActionCell: UICollectionViewCell {
     }()
     
     var actions = [ImagePickerAction]() {
+        // It is sufficient to compare the length of the array
+        // as actions can only be added but not removed
         willSet {
-            stackView.arrangedSubviews.forEach { stackView.removeArrangedSubview($0) }
+            if newValue.count != actions.count {
+                stackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+            }
         }
         didSet {
-            actions.map { ActionButton(action: $0, target: self, selector: #selector(callAction(sender:))) }
-                   .forEach { stackView.addArrangedSubview($0) }
+            if stackView.arrangedSubviews.count != actions.count {
+                actions.map { ActionButton(action: $0, target: self, selector: #selector(callAction(sender:))) }
+                       .forEach { stackView.addArrangedSubview($0) }
+            }
         }
     }
     
