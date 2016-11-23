@@ -26,11 +26,10 @@ class ImageCell: UICollectionViewCell {
     }()
     
     fileprivate class var videoImage: UIImage? {
-//        let bundle = Bundle(for: ImagePickerSheetController.self)
-//        let image = UIImage(named: "PreviewCollectionViewCell-video", in: bundle, compatibleWith: nil)
-//        
-//        return image
-        return nil
+        let bundle = Bundle(for: ImagePickerTrayController.self)
+        let image = UIImage(named: "ImageCell-Video", in: bundle, compatibleWith: nil)
+        
+        return image
     }
     
     // MARK: - Initialization
@@ -69,7 +68,7 @@ class ImageCell: UICollectionViewCell {
         imageView.frame = bounds
         
         let videoIndicatViewSize = videoIndicatorView.image?.size ?? CGSize()
-        let inset: CGFloat = 4
+        let inset: CGFloat = 8
         let videoIndicatorViewOrigin = CGPoint(x: bounds.minX + inset, y: bounds.maxY - inset - videoIndicatViewSize.height)
         videoIndicatorView.frame = CGRect(origin: videoIndicatorViewOrigin, size: videoIndicatViewSize)
     }
