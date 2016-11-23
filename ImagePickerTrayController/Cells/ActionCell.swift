@@ -8,9 +8,9 @@
 
 import Foundation
 
-class ActionCell: UICollectionViewCell {
+let spacing = CGPoint(x: 26, y: 14)
 
-    public static let spacing = CGPoint(x: 26, y: 14)
+class ActionCell: UICollectionViewCell {
 
     fileprivate let stackView: UIStackView = {
         let stackView = UIStackView()
@@ -69,8 +69,8 @@ class ActionCell: UICollectionViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        stackView.frame = bounds.insetBy(dx: ActionCell.spacing.x, dy: ActionCell.spacing.y)
-        chevronImage.frame = CGRect(x: bounds.maxX - ActionCell.spacing.x, y: bounds.midY-ActionCell.spacing.x/2, width: ActionCell.spacing.x, height: ActionCell.spacing.x)
+        stackView.frame = bounds.insetBy(dx: spacing.x, dy: spacing.y)
+        chevronImage.frame = CGRect(x: bounds.maxX - spacing.x, y: bounds.midY - spacing.x/2, width: spacing.x, height: spacing.x)
     }
     
     // MARK: - 
@@ -86,7 +86,7 @@ class ActionCell: UICollectionViewCell {
 extension ActionCell: PickerTrayDelegate {
 
     internal func didScroll(offset: CGFloat) {
-        let center = bounds.width - ActionCell.spacing.x
+        let center = bounds.width - spacing.x
         if offset < center {
             let animationPercentage =  offset.divided(by: bounds.width)
             chevronImage.alpha = animationPercentage
