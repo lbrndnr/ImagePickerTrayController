@@ -21,17 +21,18 @@ class ActionCell: UICollectionViewCell {
         return stackView
     }()
 
-    fileprivate let chevronImage: UIImageView = {
+    fileprivate let chevronImageView: UIImageView = {
         let bundle = Bundle(for: ImagePickerTrayController.self)
         let image = UIImage(named: "Chevron", in: bundle, compatibleWith: nil)
         let imageView = UIImageView(image: image)
-        imageView.contentMode = UIViewContentMode.scaleAspectFit
+        
         return imageView
     }()
 
     var actions = [ImagePickerAction]() {
         // It is sufficient to compare the length of the array
         // as actions can only be added but not removed
+        
         willSet {
             if newValue.count != actions.count {
                 stackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
@@ -61,7 +62,7 @@ class ActionCell: UICollectionViewCell {
     
     fileprivate func initialize() {
         addSubview(stackView)
-        addSubview(chevronImage)
+        addSubview(chevronImageView)
     }
     
     // MARK: - Layout
@@ -70,7 +71,7 @@ class ActionCell: UICollectionViewCell {
         super.layoutSubviews()
         
         stackView.frame = bounds.insetBy(dx: spacing.x, dy: spacing.y)
-        chevronImage.frame = CGRect(x: bounds.maxX - spacing.x, y: bounds.midY - spacing.x/2, width: spacing.x, height: spacing.x)
+        chevronImageView.center = CGPoint(x: bounds.maxX - spacing.x/2, y: bounds.midY)
     }
     
     // MARK: - 
@@ -88,8 +89,9 @@ extension ActionCell: PickerTrayDelegate {
     internal func didScroll(offset: CGFloat) {
         let center = bounds.width - spacing.x
         if offset < center {
-            let animationPercentage =  offset.divided(by: bounds.width)
-            chevronImage.alpha = animationPercentage
+            let progress = offset / bounds.width
+            chevronImageView.alpha = progress
+            chevronImageView.transform = CGAffineTransform(translationX: (1-progress) * spacing.x, y: 0)
         }
     }
 
