@@ -8,10 +8,10 @@
 
 import Foundation
 
-private let spacing = CGPoint(x: 26, y: 14)
-
 class ActionCell: UICollectionViewCell {
-    
+
+    public static let spacing = CGPoint(x: 26, y: 14)
+
     fileprivate let stackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -20,7 +20,15 @@ class ActionCell: UICollectionViewCell {
         
         return stackView
     }()
-    
+
+    fileprivate let chevronImage: UIImageView = {
+        let bundle = Bundle(for: ImagePickerTrayController.self)
+        let image = UIImage(named: "Chevron", in: bundle, compatibleWith: nil)
+        let imageView = UIImageView(image: image)
+        imageView.contentMode = UIViewContentMode.scaleAspectFit
+        return imageView
+    }()
+
     var actions = [ImagePickerAction]() {
         // It is sufficient to compare the length of the array
         // as actions can only be added but not removed
@@ -53,6 +61,7 @@ class ActionCell: UICollectionViewCell {
     
     fileprivate func initialize() {
         addSubview(stackView)
+        addSubview(chevronImage)
     }
     
     // MARK: - Layout
@@ -60,7 +69,8 @@ class ActionCell: UICollectionViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        stackView.frame = bounds.insetBy(dx: spacing.x, dy: spacing.y)
+        stackView.frame = bounds.insetBy(dx: ActionCell.spacing.x, dy: ActionCell.spacing.y)
+        chevronImage.frame = CGRect(x: bounds.maxX - ActionCell.spacing.x, y: bounds.midY-ActionCell.spacing.x/2, width: ActionCell.spacing.x, height: ActionCell.spacing.x)
     }
     
     // MARK: - 
@@ -68,6 +78,18 @@ class ActionCell: UICollectionViewCell {
     @objc fileprivate func callAction(sender: UIButton) {
         if let index = stackView.arrangedSubviews.index(of: sender) {
             actions[index].call()
+        }
+    }
+
+}
+
+extension ActionCell: PickerTrayDelegate {
+
+    internal func didScroll(offset: CGFloat) {
+        let center = bounds.width - ActionCell.spacing.x
+        if offset < center {
+            let animationPercentage =  offset.divided(by: bounds.width)
+            chevronImage.alpha = animationPercentage
         }
     }
 

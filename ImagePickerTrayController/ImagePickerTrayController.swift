@@ -16,6 +16,10 @@ public enum ImagePickerMediaType {
     case imageAndVideo
 }
 
+protocol PickerTrayDelegate: class {
+    func didScroll(offset: CGFloat)
+}
+
 public class ImagePickerTrayController: UIViewController {
     
     fileprivate(set) lazy var collectionView: UICollectionView = {
@@ -58,9 +62,13 @@ public class ImagePickerTrayController: UIViewController {
     fileprivate let height: CGFloat
     
     fileprivate let imageSize: CGSize
-    
+
+    fileprivate let actionCellWidth: CGFloat = 162
+
     public fileprivate(set) var actions = [ImagePickerAction]()
-    
+
+    internal weak var trayDelegate: PickerTrayDelegate?
+
     fileprivate var sections: [Int] {
         let actionSection = (actions.count > 0) ? 1 : 0
         let cameraSection = 1
@@ -101,6 +109,10 @@ public class ImagePickerTrayController: UIViewController {
         super.viewWillAppear(animated)
         
         fetchAssets()
+    }
+
+    public override func viewDidLayoutSubviews() {
+        collectionView.setContentOffset(CGPoint(x: actionCellWidth-ActionCell.spacing.x, y: 0), animated: false)
     }
     
     // MARK: - Action
@@ -191,7 +203,7 @@ extension ImagePickerTrayController: UICollectionViewDataSource {
         case 0:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NSStringFromClass(ActionCell.self), for: indexPath) as! ActionCell
             cell.actions = actions
-            
+            trayDelegate = cell
             return cell
         case 1:
             return collectionView.dequeueReusableCell(withReuseIdentifier: NSStringFromClass(CameraCell.self), for: indexPath)
@@ -217,7 +229,7 @@ extension ImagePickerTrayController: UICollectionViewDelegateFlowLayout {
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         switch indexPath.section {
         case 0:
-            return CGSize(width: 162, height: height)
+            return CGSize(width: actionCellWidth, height: height)
         case 1:
             return CGSize(width: 150, height: height)
         case 2:
@@ -227,6 +239,16 @@ extension ImagePickerTrayController: UICollectionViewDelegateFlowLayout {
         }
     }
     
+}
+
+// MARK: - UIScrollViewDelegate
+
+extension ImagePickerTrayController: UIScrollViewDelegate {
+
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let offset = scrollView.contentOffset.x > 0 ? scrollView.contentOffset.x : 0
+        trayDelegate?.didScroll(offset: offset)
+    }
 }
 
 // MARK: - UIViewControllerTransitioningDelegate
