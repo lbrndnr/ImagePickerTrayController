@@ -63,11 +63,18 @@ public class ImagePickerTrayController: UIViewController {
     
     fileprivate var sections: [Int] {
         let actionSection = (actions.count > 0) ? 1 : 0
-        let cameraSection = 1
+        let cameraSection = (previewLayer == nil) ? 0 : 1
         let assetSection = assets.count
         
         return [actionSection, cameraSection, assetSection]
     }
+    
+    
+    let session = AVCaptureSession()
+    
+    let device = AVCaptureDevice.defaultDevice(withDeviceType: .builtInWideAngleCamera, mediaType: AVMediaTypeVideo, position: .back)
+    
+    var previewLayer: AVCaptureVideoPreviewLayer?
     
     // MARK: - Initialization
     
@@ -95,12 +102,30 @@ public class ImagePickerTrayController: UIViewController {
         collectionView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         collectionView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        
+        do {
+            let input = try AVCaptureDeviceInput(device: device)
+            if session.canAddInput(input) {
+                session.addInput(input)
+                previewLayer = AVCaptureVideoPreviewLayer(session: session)
+                session.startRunning()
+            }
+        }
+        catch {
+            
+        }
     }
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         fetchAssets()
+    }
+    
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        session.stopRunning()
     }
     
     // MARK: - Action
@@ -194,7 +219,10 @@ extension ImagePickerTrayController: UICollectionViewDataSource {
             
             return cell
         case 1:
-            return collectionView.dequeueReusableCell(withReuseIdentifier: NSStringFromClass(CameraCell.self), for: indexPath)
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NSStringFromClass(CameraCell.self), for: indexPath) as! CameraCell
+            cell.previewLayer = previewLayer
+            
+            return cell
         case 2:
             let asset = assets[indexPath.item]
             
