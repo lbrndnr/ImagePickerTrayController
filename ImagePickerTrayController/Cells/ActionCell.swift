@@ -23,7 +23,7 @@ class ActionCell: UICollectionViewCell {
 
     fileprivate let chevronImageView: UIImageView = {
         let bundle = Bundle(for: ImagePickerTrayController.self)
-        let image = UIImage(named: "Chevron", in: bundle, compatibleWith: nil)
+        let image = UIImage(named: "ActionCell-Chevron", in: bundle, compatibleWith: nil)
         let imageView = UIImageView(image: image)
         
         return imageView
