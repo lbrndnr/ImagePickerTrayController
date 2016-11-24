@@ -18,19 +18,9 @@ class ImageCell: UICollectionViewCell {
         return imageView
     }()
     
-    let videoIndicatorView: UIImageView = {
-        let imageView = UIImageView(image: videoImage)
-        imageView.isHidden = true
-        
-        return imageView
-    }()
+    fileprivate let videoIndicatorView = UIImageView(image: UIImage(bundledName: "ImageCell-Video"))
     
-    fileprivate class var videoImage: UIImage? {
-        let bundle = Bundle(for: ImagePickerTrayController.self)
-        let image = UIImage(named: "ImageCell-Video", in: bundle, compatibleWith: nil)
-        
-        return image
-    }
+    fileprivate let checkmarkView = UIImageView(image: UIImage(bundledName: "ImageCell-Video"))
     
     // MARK: - Initialization
     
@@ -49,6 +39,8 @@ class ImageCell: UICollectionViewCell {
     fileprivate func initialize() {
         addSubview(imageView)
         addSubview(videoIndicatorView)
+        
+        prepareForReuse()
     }
     
     // MARK: - Other Methods

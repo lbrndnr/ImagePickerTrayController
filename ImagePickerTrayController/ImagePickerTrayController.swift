@@ -238,6 +238,16 @@ extension ImagePickerTrayController: UICollectionViewDataSource {
     
 }
 
+// MARK: - UICollectionViewDelegate
+
+extension ImagePickerTrayController: UICollectionViewDelegate {
+    
+    public func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+        return (indexPath.section == sections.count - 1)
+    }
+    
+}
+
 // MARK: - UICollectionViewDelegateFlowLayout
 
 extension ImagePickerTrayController: UICollectionViewDelegateFlowLayout {
