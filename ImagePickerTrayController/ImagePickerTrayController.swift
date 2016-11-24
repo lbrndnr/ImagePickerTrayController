@@ -112,6 +112,8 @@ public class ImagePickerTrayController: UIViewController {
     }
 
     public override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
         collectionView.setContentOffset(CGPoint(x: actionCellWidth - spacing.x, y: 0), animated: false)
     }
     

@@ -25,7 +25,8 @@ class ActionCell: UICollectionViewCell {
         let bundle = Bundle(for: ImagePickerTrayController.self)
         let image = UIImage(named: "ActionCell-Chevron", in: bundle, compatibleWith: nil)
         let imageView = UIImageView(image: image)
-        
+        imageView.alpha = 0.5
+
         return imageView
     }()
 
@@ -89,8 +90,8 @@ extension ActionCell: PickerTrayDelegate {
     internal func didScroll(offset: CGFloat) {
         let center = bounds.width - spacing.x
         if offset < center {
-            let progress = offset / bounds.width
-            chevronImageView.alpha = progress
+            let progress = offset / center
+            chevronImageView.alpha = progress / 2
             chevronImageView.transform = CGAffineTransform(translationX: (1-progress) * spacing.x, y: 0)
         }
     }
