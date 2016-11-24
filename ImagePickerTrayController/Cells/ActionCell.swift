@@ -52,7 +52,7 @@ class ActionCell: UICollectionViewCell {
     }
     
     fileprivate func initialize() {
-        addSubview(stackView)
+        contentView.addSubview(stackView)
     }
     
     // MARK: - Layout
