@@ -82,7 +82,7 @@ public class ImagePickerTrayController: UIViewController {
         self.height = 216
         
         let numberOfRows = (UIDevice.current.userInterfaceIdiom == .pad) ? 3 : 2
-        let side = round((self.height-2)/CGFloat(numberOfRows))
+        let side = round((self.height-CGFloat(numberOfRows))/CGFloat(numberOfRows))
         self.imageSize = CGSize(width: side, height: side)
         
         super.init(nibName: nil, bundle: nil)
