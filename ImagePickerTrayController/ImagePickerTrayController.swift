@@ -27,7 +27,6 @@ public class ImagePickerTrayController: UIViewController {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.backgroundColor = UIColor(red: 209.0/255.0, green: 213.0/255.0, blue: 218.0/255.0, alpha: 1.0)
-        collectionView.allowsMultipleSelection = true
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.showsHorizontalScrollIndicator = false
@@ -55,6 +54,14 @@ public class ImagePickerTrayController: UIViewController {
     /// The media type of the displayed assets
     open let mediaType: ImagePickerMediaType = .imageAndVideo
     
+    open var allowsMultipleSelection = true {
+        didSet {
+            if isViewLoaded {
+                collectionView.allowsMultipleSelection = allowsMultipleSelection
+            }
+        }
+    }
+    
     fileprivate let height: CGFloat
     
     fileprivate let imageSize: CGSize
@@ -68,7 +75,6 @@ public class ImagePickerTrayController: UIViewController {
         
         return [actionSection, cameraSection, assetSection]
     }
-    
     
     let session = AVCaptureSession()
     
@@ -97,6 +103,7 @@ public class ImagePickerTrayController: UIViewController {
     public override func loadView() {
         super.loadView()
         
+        collectionView.allowsMultipleSelection = allowsMultipleSelection
         view.addSubview(collectionView)
         collectionView.heightAnchor.constraint(equalToConstant: height).isActive = true
         collectionView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
