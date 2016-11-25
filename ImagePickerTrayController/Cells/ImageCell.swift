@@ -19,17 +19,23 @@ class ImageCell: UICollectionViewCell {
     }()
     
     let videoIndicatorView: UIImageView = {
-        let imageView = UIImageView(image: videoImage)
+        let imageView = UIImageView(image: UIImage(bundledName: "ImageCell-Video"))
         imageView.isHidden = true
         
         return imageView
     }()
     
-    fileprivate class var videoImage: UIImage? {
-        let bundle = Bundle(for: ImagePickerTrayController.self)
-        let image = UIImage(named: "ImageCell-Video", in: bundle, compatibleWith: nil)
+    fileprivate let checkmarkView: UIImageView = {
+        let imageView  = UIImageView(image: UIImage(bundledName: "ImageCell-Selected"))
+        imageView.isHidden = true
         
-        return image
+        return imageView
+    }()
+    
+    override var isSelected: Bool {
+        didSet {
+            checkmarkView.isHidden = !isSelected
+        }
     }
     
     // MARK: - Initialization
@@ -47,8 +53,9 @@ class ImageCell: UICollectionViewCell {
     }
     
     fileprivate func initialize() {
-        addSubview(imageView)
-        addSubview(videoIndicatorView)
+        contentView.addSubview(imageView)
+        contentView.addSubview(videoIndicatorView)
+        contentView.addSubview(checkmarkView)
     }
     
     // MARK: - Other Methods
@@ -67,10 +74,13 @@ class ImageCell: UICollectionViewCell {
         
         imageView.frame = bounds
         
-        let videoIndicatViewSize = videoIndicatorView.image?.size ?? CGSize()
+        let videoIndicatorViewSize = videoIndicatorView.image?.size ?? CGSize()
         let inset: CGFloat = 8
-        let videoIndicatorViewOrigin = CGPoint(x: bounds.minX + inset, y: bounds.maxY - inset - videoIndicatViewSize.height)
-        videoIndicatorView.frame = CGRect(origin: videoIndicatorViewOrigin, size: videoIndicatViewSize)
+        let videoIndicatorViewOrigin = CGPoint(x: bounds.minX + inset, y: bounds.maxY - inset - videoIndicatorViewSize.height)
+        videoIndicatorView.frame = CGRect(origin: videoIndicatorViewOrigin, size: videoIndicatorViewSize)
+        
+        let checkmarkSize = checkmarkView.frame.size
+        checkmarkView.center = CGPoint(x: bounds.maxX-checkmarkSize.width/2-4, y: bounds.maxY-checkmarkSize.height/2-4)
     }
     
 }

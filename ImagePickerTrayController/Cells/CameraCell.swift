@@ -11,7 +11,16 @@ import AVFoundation
 
 class CameraCell: UICollectionViewCell {
     
-    var previewLayer: AVCaptureVideoPreviewLayer?
+    var previewLayer: AVCaptureVideoPreviewLayer? {
+        willSet {
+            previewLayer?.removeFromSuperlayer()
+        }
+        didSet {
+            if let previewLayer = previewLayer {
+                layer.addSublayer(previewLayer)
+            }
+        }
+    }
     
     // MARK: - Initialization
     
@@ -29,27 +38,6 @@ class CameraCell: UICollectionViewCell {
     
     fileprivate func initialize() {
         backgroundColor = .green
-        
-        let session = AVCaptureSession()
-        let device = AVCaptureDevice.defaultDevice(withDeviceType: .builtInWideAngleCamera, mediaType: AVMediaTypeVideo, position: .back)
-        
-        do {
-            let input = try AVCaptureDeviceInput(device: device)
-            if session.canAddInput(input) {
-                session.addInput(input)
-            }
-            
-            previewLayer = AVCaptureVideoPreviewLayer(session: session)
-            if let previewLayer = previewLayer {
-                previewLayer.frame = bounds
-                layer.addSublayer(previewLayer)
-            }
-        }
-        catch {
-            
-        }
-        
-//        session.startRunning()
     }
     
     // MARK: - Layout

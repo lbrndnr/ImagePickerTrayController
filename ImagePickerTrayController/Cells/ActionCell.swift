@@ -63,6 +63,7 @@ class ActionCell: UICollectionViewCell {
     
     fileprivate func initialize() {
         addSubview(stackView)
+        addSubview(stackView)
         addSubview(chevronImageView)
     }
     

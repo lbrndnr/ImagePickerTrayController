@@ -17,15 +17,13 @@ public struct ImagePickerAction {
     public var callback: Callback
     
     public static func cameraAction(with callback: @escaping Callback) -> ImagePickerAction {
-        let bundle = Bundle(for: ImagePickerTrayController.self)
-        let image = UIImage(named: "ImagePickerAction-Camera", in: bundle, compatibleWith: nil)!
+        let image = UIImage(bundledName: "ImagePickerAction-Camera")!
         
         return ImagePickerAction(title: NSLocalizedString("Camera", comment: "Image Picker Camera Action"), image: image, callback: callback)
     }
     
     public static func libraryAction(with callback: @escaping Callback) -> ImagePickerAction {
-        let bundle = Bundle(for: ImagePickerTrayController.self)
-        let image = UIImage(named: "ImagePickerAction-Library", in: bundle, compatibleWith: nil)!
+        let image = UIImage(bundledName: "ImagePickerAction-Library")!
         
         return ImagePickerAction(title: NSLocalizedString("Photo Library", comment: "Image Picker Photo Library Action"), image: image, callback: callback)
     }

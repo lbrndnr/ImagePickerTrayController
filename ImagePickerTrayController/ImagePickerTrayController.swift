@@ -31,7 +31,6 @@ public class ImagePickerTrayController: UIViewController {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.backgroundColor = UIColor(red: 209.0/255.0, green: 213.0/255.0, blue: 218.0/255.0, alpha: 1.0)
-        collectionView.allowsMultipleSelection = true
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.showsHorizontalScrollIndicator = false
@@ -59,6 +58,14 @@ public class ImagePickerTrayController: UIViewController {
     /// The media type of the displayed assets
     open let mediaType: ImagePickerMediaType = .imageAndVideo
     
+    open var allowsMultipleSelection = true {
+        didSet {
+            if isViewLoaded {
+                collectionView.allowsMultipleSelection = allowsMultipleSelection
+            }
+        }
+    }
+    
     fileprivate let height: CGFloat
     
     fileprivate let imageSize: CGSize
@@ -71,11 +78,17 @@ public class ImagePickerTrayController: UIViewController {
 
     fileprivate var sections: [Int] {
         let actionSection = (actions.count > 0) ? 1 : 0
-        let cameraSection = 1
+        let cameraSection = (previewLayer == nil) ? 0 : 1
         let assetSection = assets.count
         
         return [actionSection, cameraSection, assetSection]
     }
+    
+    let session = AVCaptureSession()
+    
+    let device = AVCaptureDevice.defaultDevice(withDeviceType: .builtInWideAngleCamera, mediaType: AVMediaTypeVideo, position: .back)
+    
+    var previewLayer: AVCaptureVideoPreviewLayer?
     
     // MARK: - Initialization
     
@@ -83,7 +96,7 @@ public class ImagePickerTrayController: UIViewController {
         self.height = 216
         
         let numberOfRows = (UIDevice.current.userInterfaceIdiom == .pad) ? 3 : 2
-        let side = round((self.height-2)/CGFloat(numberOfRows))
+        let side = round((self.height-CGFloat(numberOfRows))/CGFloat(numberOfRows))
         self.imageSize = CGSize(width: side, height: side)
         
         super.init(nibName: nil, bundle: nil)
@@ -98,11 +111,24 @@ public class ImagePickerTrayController: UIViewController {
     public override func loadView() {
         super.loadView()
         
+        collectionView.allowsMultipleSelection = allowsMultipleSelection
         view.addSubview(collectionView)
         collectionView.heightAnchor.constraint(equalToConstant: height).isActive = true
         collectionView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         collectionView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        
+        do {
+            let input = try AVCaptureDeviceInput(device: device)
+            if session.canAddInput(input) {
+                session.addInput(input)
+                previewLayer = AVCaptureVideoPreviewLayer(session: session)
+                session.startRunning()
+            }
+        }
+        catch {
+            
+        }
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -115,6 +141,12 @@ public class ImagePickerTrayController: UIViewController {
         super.viewDidLayoutSubviews()
 
         collectionView.setContentOffset(CGPoint(x: actionCellWidth - spacing.x, y: 0), animated: false)
+    }
+    
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        session.stopRunning()
     }
     
     // MARK: - Action
@@ -208,7 +240,10 @@ extension ImagePickerTrayController: UICollectionViewDataSource {
             trayDelegate = cell
             return cell
         case 1:
-            return collectionView.dequeueReusableCell(withReuseIdentifier: NSStringFromClass(CameraCell.self), for: indexPath)
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NSStringFromClass(CameraCell.self), for: indexPath) as! CameraCell
+            cell.previewLayer = previewLayer
+            
+            return cell
         case 2:
             let asset = assets[indexPath.item]
             
@@ -220,6 +255,16 @@ extension ImagePickerTrayController: UICollectionViewDataSource {
         default:
             fatalError("More than 3 sections are invalid.")
         }
+    }
+    
+}
+
+// MARK: - UICollectionViewDelegate
+
+extension ImagePickerTrayController: UICollectionViewDelegate {
+    
+    public func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+        return (indexPath.section == sections.count - 1)
     }
     
 }
