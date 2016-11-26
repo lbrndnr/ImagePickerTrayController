@@ -9,8 +9,11 @@
 import Foundation
 
 let spacing = CGPoint(x: 26, y: 14)
+private let stackViewOffset: CGFloat = 102
 
 class ActionCell: UICollectionViewCell {
+    
+    fileprivate let stackContainerView = UIView()
 
     fileprivate let stackView: UIStackView = {
         let stackView = UIStackView()
@@ -47,6 +50,15 @@ class ActionCell: UICollectionViewCell {
         }
     }
     
+    var disclosureProcess: CGFloat = 0 {
+        didSet {
+            let progress = max(disclosureProcess, 0)
+            chevronImageView.alpha = progress/2
+            chevronImageView.transform = CGAffineTransform(translationX: (1-progress) * spacing.x, y: 0)
+            stackView.transform = CGAffineTransform(translationX: (1-progress) * stackViewOffset, y: 0)
+        }
+    }
+    
     // MARK: - Initialization
     
     override init(frame: CGRect) {
@@ -62,9 +74,9 @@ class ActionCell: UICollectionViewCell {
     }
     
     fileprivate func initialize() {
-        addSubview(stackView)
-        addSubview(stackView)
-        addSubview(chevronImageView)
+        contentView.addSubview(stackContainerView)
+        stackContainerView.addSubview(stackView)
+        contentView.addSubview(chevronImageView)
     }
     
     // MARK: - Layout
@@ -81,19 +93,6 @@ class ActionCell: UICollectionViewCell {
     @objc fileprivate func callAction(sender: UIButton) {
         if let index = stackView.arrangedSubviews.index(of: sender) {
             actions[index].call()
-        }
-    }
-
-}
-
-extension ActionCell: PickerTrayDelegate {
-
-    internal func didScroll(offset: CGFloat) {
-        let center = bounds.width - spacing.x
-        if offset < center {
-            let progress = offset / center
-            chevronImageView.alpha = progress / 2
-            chevronImageView.transform = CGAffineTransform(translationX: (1-progress) * spacing.x, y: 0)
         }
     }
 

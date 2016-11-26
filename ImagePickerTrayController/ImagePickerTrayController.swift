@@ -16,10 +16,6 @@ public enum ImagePickerMediaType {
     case imageAndVideo
 }
 
-protocol PickerTrayDelegate: class {
-    func didScroll(offset: CGFloat)
-}
-
 public class ImagePickerTrayController: UIViewController {
     
     fileprivate(set) lazy var collectionView: UICollectionView = {
@@ -71,10 +67,10 @@ public class ImagePickerTrayController: UIViewController {
     fileprivate let imageSize: CGSize
 
     fileprivate let actionCellWidth: CGFloat = 162
+    
+    fileprivate weak var actionCell: ActionCell?
 
     public fileprivate(set) var actions = [ImagePickerAction]()
-
-    internal weak var trayDelegate: PickerTrayDelegate?
 
     fileprivate var sections: [Int] {
         let actionSection = (actions.count > 0) ? 1 : 0
@@ -237,7 +233,8 @@ extension ImagePickerTrayController: UICollectionViewDataSource {
         case 0:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NSStringFromClass(ActionCell.self), for: indexPath) as! ActionCell
             cell.actions = actions
-            trayDelegate = cell
+            actionCell = cell
+            
             return cell
         case 1:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NSStringFromClass(CameraCell.self), for: indexPath) as! CameraCell
@@ -293,8 +290,10 @@ extension ImagePickerTrayController: UICollectionViewDelegateFlowLayout {
 extension ImagePickerTrayController: UIScrollViewDelegate {
 
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let offset = scrollView.contentOffset.x > 0 ? scrollView.contentOffset.x : 0
-        trayDelegate?.didScroll(offset: offset)
+        if sections[0] > 0 {
+            let offset = scrollView.contentOffset.x > 0 ? scrollView.contentOffset.x : 0
+            actionCell?.disclosureProcess = (offset / actionCellWidth)
+        }
     }
 }
 

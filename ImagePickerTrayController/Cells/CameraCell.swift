@@ -17,7 +17,7 @@ class CameraCell: UICollectionViewCell {
         }
         didSet {
             if let previewLayer = previewLayer {
-                layer.addSublayer(previewLayer)
+                contentView.layer.addSublayer(previewLayer)
             }
         }
     }
