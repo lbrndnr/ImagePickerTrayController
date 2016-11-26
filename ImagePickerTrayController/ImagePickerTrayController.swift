@@ -137,6 +137,7 @@ public class ImagePickerTrayController: UIViewController {
         super.viewDidLayoutSubviews()
 
         collectionView.setContentOffset(CGPoint(x: actionCellWidth - spacing.x, y: 0), animated: false)
+        reloadActionCellDisclosureProgress()
     }
     
     public override func viewWillDisappear(_ animated: Bool) {
@@ -214,6 +215,14 @@ public class ImagePickerTrayController: UIViewController {
         imageManager.startCachingImages(for: [asset], targetSize: imageSize, contentMode: .aspectFill, options: requestOptions)
     }
     
+    // MARK: -
+    
+    fileprivate func reloadActionCellDisclosureProgress() {
+        if sections[0] > 0 {
+            actionCell?.disclosureProcess = (collectionView.contentOffset.x / (actionCellWidth/2))
+        }
+    }
+    
 }
 
 // MARK: - UICollectionViewDataSource
@@ -234,6 +243,7 @@ extension ImagePickerTrayController: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NSStringFromClass(ActionCell.self), for: indexPath) as! ActionCell
             cell.actions = actions
             actionCell = cell
+            reloadActionCellDisclosureProgress()
             
             return cell
         case 1:
@@ -290,10 +300,7 @@ extension ImagePickerTrayController: UICollectionViewDelegateFlowLayout {
 extension ImagePickerTrayController: UIScrollViewDelegate {
 
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if sections[0] > 0 {
-            let offset = scrollView.contentOffset.x > 0 ? scrollView.contentOffset.x : 0
-            actionCell?.disclosureProcess = (offset / actionCellWidth)
-        }
+        reloadActionCellDisclosureProgress()
     }
 }
 
