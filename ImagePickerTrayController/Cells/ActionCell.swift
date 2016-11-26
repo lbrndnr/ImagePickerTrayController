@@ -81,9 +81,11 @@ class ActionCell: UICollectionViewCell {
         let progress = max(disclosureProcess, 0)
         stackView.frame = bounds.insetBy(dx: spacing.x, dy: spacing.y).offsetBy(dx: -progress * stackViewOffset, dy: 0)
         
-        let chevronOffset = (1-progress) * (spacing.x + stackViewOffset)
         chevronImageView.alpha = progress/2
-        chevronImageView.center = CGPoint(x: bounds.maxX - spacing.x/2 + chevronOffset, y: bounds.midY)
+        
+        let chevronOffset = (1-progress) * (spacing.x + stackViewOffset)
+        let chevronCenterX = max(bounds.maxX - spacing.x/2 + chevronOffset, stackView.frame.maxX + spacing.x/2)
+        chevronImageView.center = CGPoint(x: chevronCenterX, y: bounds.midY)
     }
     
     // MARK: -
