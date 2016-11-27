@@ -74,17 +74,24 @@ public class ImagePickerTrayController: UIViewController {
 
     fileprivate var sections: [Int] {
         let actionSection = (actions.count > 0) ? 1 : 0
-        let cameraSection = (previewLayer == nil) ? 0 : 1
+        let cameraSection = UIImagePickerController.isSourceTypeAvailable(.camera) ? 1 : 0
         let assetSection = assets.count
         
         return [actionSection, cameraSection, assetSection]
     }
     
-    let session = AVCaptureSession()
-    
-    let device = AVCaptureDevice.defaultDevice(withDeviceType: .builtInWideAngleCamera, mediaType: AVMediaTypeVideo, position: .back)
-    
-    var previewLayer: AVCaptureVideoPreviewLayer?
+    fileprivate lazy var cameraController: UIImagePickerController = {
+        let controller = UIImagePickerController()
+        controller.sourceType = .camera
+        controller.showsCameraControls = false
+        
+        let view = CameraOverlayView()
+        view.addTarget(self, action: #selector(takePicture), for: .touchUpInside)
+        view.flipCameraButton.addTarget(self, action: #selector(flipCamera), for: .touchUpInside)
+        controller.cameraOverlayView = view
+        
+        return controller
+    }()
     
     // MARK: - Initialization
     
@@ -107,24 +114,12 @@ public class ImagePickerTrayController: UIViewController {
     public override func loadView() {
         super.loadView()
         
-        collectionView.allowsMultipleSelection = allowsMultipleSelection
         view.addSubview(collectionView)
         collectionView.heightAnchor.constraint(equalToConstant: height).isActive = true
         collectionView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         collectionView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        
-        do {
-            let input = try AVCaptureDeviceInput(device: device)
-            if session.canAddInput(input) {
-                session.addInput(input)
-                previewLayer = AVCaptureVideoPreviewLayer(session: session)
-                session.startRunning()
-            }
-        }
-        catch {
-            
-        }
+        collectionView.allowsMultipleSelection = allowsMultipleSelection
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -138,12 +133,6 @@ public class ImagePickerTrayController: UIViewController {
 
         collectionView.setContentOffset(CGPoint(x: actionCellWidth - spacing.x, y: 0), animated: false)
         reloadActionCellDisclosureProgress()
-    }
-    
-    public override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        session.stopRunning()
     }
     
     // MARK: - Action
@@ -215,6 +204,16 @@ public class ImagePickerTrayController: UIViewController {
         imageManager.startCachingImages(for: [asset], targetSize: imageSize, contentMode: .aspectFill, options: requestOptions)
     }
     
+    // MARK: - Camera
+    
+    @objc fileprivate func flipCamera() {
+        cameraController.cameraDevice = (cameraController.cameraDevice == .rear) ? .front : .rear
+    }
+    
+    @objc fileprivate func takePicture() {
+        
+    }
+    
     // MARK: -
     
     fileprivate func reloadActionCellDisclosureProgress() {
@@ -248,7 +247,8 @@ extension ImagePickerTrayController: UICollectionViewDataSource {
             return cell
         case 1:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NSStringFromClass(CameraCell.self), for: indexPath) as! CameraCell
-            cell.previewLayer = previewLayer
+            cell.cameraView = cameraController.view
+            cell.cameraOverlayView = cameraController.cameraOverlayView
             
             return cell
         case 2:

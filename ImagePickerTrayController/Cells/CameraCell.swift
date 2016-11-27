@@ -7,37 +7,24 @@
 //
 
 import UIKit
-import AVFoundation
 
 class CameraCell: UICollectionViewCell {
     
-    var previewLayer: AVCaptureVideoPreviewLayer? {
+    var cameraView: UIView? {
         willSet {
-            previewLayer?.removeFromSuperlayer()
+            cameraView?.removeFromSuperview()
         }
         didSet {
-            if let previewLayer = previewLayer {
-                contentView.layer.addSublayer(previewLayer)
+            if let cameraView = cameraView {
+                contentView.addSubview(cameraView)
             }
         }
     }
     
-    // MARK: - Initialization
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        
-        initialize()
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        
-        initialize()
-    }
-    
-    fileprivate func initialize() {
-        backgroundColor = .green
+    var cameraOverlayView: UIView? {
+        didSet {
+            setNeedsLayout()
+        }
     }
     
     // MARK: - Layout
@@ -45,7 +32,8 @@ class CameraCell: UICollectionViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        previewLayer?.frame = bounds
+        cameraView?.frame = bounds
+        cameraOverlayView?.frame = bounds
     }
     
 }
