@@ -9,25 +9,24 @@
 import UIKit
 import ImagePickerTrayController
 
-class ViewController: UIViewController {
+class ViewController: UITableViewController {
+    
+    var rows: [Int] {
+        return (0..<100).map { $0 }
+    }
 
     // MARK: - View Lifecycle
-    
-    override func loadView() {
-        super.loadView()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
         
-        let button = UIButton(type: .system)
-        button.setTitle("Tap Me!", for: UIControlState())
-        button.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(button)
-        button.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        button.widthAnchor.constraint(equalToConstant: 150).isActive = true
-        button.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        button.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        button.addTarget(self, action: #selector(presentImagePickerTray(_:)), for: .touchUpInside)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Images", style: .plain, target: self, action: #selector(presentImagePickerTray(_:)))
+        
+        let cellClass = UITableViewCell.self
+        tableView.register(cellClass, forCellReuseIdentifier: NSStringFromClass(cellClass))
     }
     
-    // MARK: - Other Methods
+    // MARK: -
     
     func presentImagePickerTray(_: UITapGestureRecognizer) {
         let controller = ImagePickerTrayController()
@@ -42,3 +41,23 @@ class ViewController: UIViewController {
 
 }
 
+// MARK: - UITableViewDataSource
+
+extension ViewController {
+    
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return rows.count
+    }
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: NSStringFromClass(UITableViewCell.self), for: indexPath)
+        cell.textLabel?.text = String(rows[indexPath.row])
+        
+        return cell
+    }
+    
+}
