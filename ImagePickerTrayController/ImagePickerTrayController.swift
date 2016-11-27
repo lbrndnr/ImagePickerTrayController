@@ -10,6 +10,8 @@ import UIKit
 import Photos
 import MobileCoreServices
 
+fileprivate let itemSpacing: CGFloat = 1
+
 /// The media type an instance of ImagePickerSheetController can display
 public enum ImagePickerMediaType {
     case image
@@ -25,7 +27,7 @@ public enum ImagePickerMediaType {
     @objc optional func controller(_ controller: ImagePickerTrayController, willDeselectAsset asset: PHAsset)
     @objc optional func controller(_ controller: ImagePickerTrayController, didDeselectAsset asset: PHAsset)
     
-    @objc optional func controller(_ controller: ImagePickerTrayController, didTakeAsset asset: PHAsset)
+    @objc optional func controller(_ controller: ImagePickerTrayController, didTakeImage image:UIImage)
     
 }
 
@@ -34,10 +36,11 @@ public class ImagePickerTrayController: UIViewController {
     fileprivate(set) lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.minimumInteritemSpacing = 0
-        layout.minimumLineSpacing = 0
+        layout.minimumInteritemSpacing = itemSpacing
+        layout.minimumLineSpacing = itemSpacing
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.contentInset = UIEdgeInsets(top: 1, left: 0, bottom: 2, right: 1)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.backgroundColor = UIColor(red: 209.0/255.0, green: 213.0/255.0, blue: 218.0/255.0, alpha: 1.0)
         collectionView.dataSource = self
@@ -58,6 +61,7 @@ public class ImagePickerTrayController: UIViewController {
         controller.sourceType = .camera
         controller.showsCameraControls = false
         controller.allowsEditing = false
+        controller.cameraFlashMode = .off
         controller.mediaTypes = [kUTTypeImage as String, kUTTypeLivePhoto as String]
         
         let view = CameraOverlayView()
@@ -93,7 +97,7 @@ public class ImagePickerTrayController: UIViewController {
     
     fileprivate let height: CGFloat
     
-    fileprivate let imageSize: CGSize
+    fileprivate var imageSize: CGSize = .zero
 
     fileprivate let actionCellWidth: CGFloat = 162
     
@@ -116,10 +120,6 @@ public class ImagePickerTrayController: UIViewController {
     public init() {
         self.height = 216
         
-        let numberOfRows = (UIDevice.current.userInterfaceIdiom == .pad) ? 3 : 2
-        let side = round((self.height-CGFloat(numberOfRows))/CGFloat(numberOfRows))
-        self.imageSize = CGSize(width: side, height: side)
-        
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -138,6 +138,11 @@ public class ImagePickerTrayController: UIViewController {
         collectionView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         collectionView.allowsMultipleSelection = allowsMultipleSelection
+        
+        let numberOfRows = (UIDevice.current.userInterfaceIdiom == .pad) ? 3 : 2
+        let totalItemSpacing = CGFloat(numberOfRows-1)*itemSpacing + collectionView.contentInset.vertical
+        let side = round((self.height-totalItemSpacing)/CGFloat(numberOfRows))
+        self.imageSize = CGSize(width: side, height: side)
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -319,16 +324,26 @@ extension ImagePickerTrayController: UICollectionViewDelegate {
 extension ImagePickerTrayController: UICollectionViewDelegateFlowLayout {
     
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let maxItemHeight = collectionView.frame.height-collectionView.contentInset.vertical
+        
         switch indexPath.section {
         case 0:
-            return CGSize(width: actionCellWidth, height: height)
+            return CGSize(width: actionCellWidth, height: maxItemHeight)
         case 1:
-            return CGSize(width: 150, height: height)
+            return CGSize(width: 150, height: maxItemHeight)
         case 2:
             return imageSize
         default:
             return .zero
         }
+    }
+    
+    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        guard section == 1 else {
+            return UIEdgeInsets()
+        }
+        
+        return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 6)
     }
     
 }
@@ -347,7 +362,9 @@ extension ImagePickerTrayController: UIScrollViewDelegate {
 extension ImagePickerTrayController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        print(info[UIImagePickerControllerLivePhoto])
+        if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
+            delegate?.controller?(self, didTakeImage: image)
+        }
     }
     
 }

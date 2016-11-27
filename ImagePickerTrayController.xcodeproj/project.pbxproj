@@ -24,6 +24,7 @@
 		4970E5901DB0E0410078ED23 /* ImagePickerTrayController.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4970E5881DB0E0410078ED23 /* ImagePickerTrayController.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4970E5961DB0E0550078ED23 /* ImagePickerTrayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4970E5951DB0E0550078ED23 /* ImagePickerTrayController.swift */; };
 		498CCB0A1DB103FA00A970B1 /* AnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 498CCB091DB103FA00A970B1 /* AnimationController.swift */; };
+		49FC9BD11DEB472900AC1AA8 /* UIEdgeInsetsExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49FC9BD01DEB472900AC1AA8 /* UIEdgeInsetsExtensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,6 +73,7 @@
 		4970E58B1DB0E0410078ED23 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4970E5951DB0E0550078ED23 /* ImagePickerTrayController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePickerTrayController.swift; sourceTree = "<group>"; };
 		498CCB091DB103FA00A970B1 /* AnimationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnimationController.swift; sourceTree = "<group>"; };
+		49FC9BD01DEB472900AC1AA8 /* UIEdgeInsetsExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIEdgeInsetsExtensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,6 +117,7 @@
 			isa = PBXGroup;
 			children = (
 				492715F91DE7835200A9DD5B /* UIImageExtensions.swift */,
+				49FC9BD01DEB472900AC1AA8 /* UIEdgeInsetsExtensions.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -363,6 +366,7 @@
 				4970E5961DB0E0550078ED23 /* ImagePickerTrayController.swift in Sources */,
 				4909255B1DE4E600001027EC /* CameraCell.swift in Sources */,
 				4909255C1DE4E600001027EC /* ImageCell.swift in Sources */,
+				49FC9BD11DEB472900AC1AA8 /* UIEdgeInsetsExtensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
