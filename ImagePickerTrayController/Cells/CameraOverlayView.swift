@@ -11,7 +11,7 @@ import UIKit
 class CameraOverlayView: UIButton {
     
     let flipCameraButton: UIButton = {
-        let button = UIButton()
+        let button = FlipCameraButton()
         button.setImage(UIImage(bundledName: "CameraOverlayView-CameraFlip"), for: .normal)
         
         return button
@@ -53,25 +53,39 @@ class CameraOverlayView: UIButton {
         let flipCameraButtonOrigin = CGPoint(x: bounds.maxX - flipCameraButtonSize.width, y: bounds.minY)
         flipCameraButton.frame = CGRect(origin: flipCameraButtonOrigin, size: flipCameraButtonSize)
         
-        let shutterButtonViewSize = CGSize(width: 30, height: 30)
-        let shutterButtonViewOrigin = CGPoint(x: bounds.midX - shutterButtonViewSize.width/2, y: bounds.maxY - shutterButtonViewSize.height/2)
+        let shutterButtonViewSize = CGSize(width: 29, height: 29)
+        let shutterButtonViewOrigin = CGPoint(x: bounds.midX - shutterButtonViewSize.width/2, y: bounds.maxY - shutterButtonViewSize.height-4)
         shutterButtonView.frame = CGRect(origin: shutterButtonViewOrigin, size: shutterButtonViewSize)
+    }
+    
+}
+
+fileprivate class FlipCameraButton: UIButton {
+    
+    fileprivate override func imageRect(forContentRect contentRect: CGRect) -> CGRect {
+        let imageSize = super.imageRect(forContentRect: contentRect).size
+        let imageOrigin = CGPoint(x: contentRect.maxX-imageSize.width-10, y: contentRect.minY+10)
+        
+        return CGRect(origin: imageOrigin, size: imageSize)
     }
     
 }
 
 fileprivate class ShutterButtonView: UIView {
     
-    let bezelLayer: CAShapeLayer = {
-        let layer = CAShapeLayer()
-        
+    let bezelLayer: CALayer = {
+        let layer = CALayer()
+        layer.masksToBounds = true
+        layer.borderColor = UIColor.white.cgColor
+        layer.borderWidth = 2
         
         return layer
     }()
     
     let knobLayer: CALayer = {
         let layer = CALayer()
-        
+        layer.masksToBounds = true
+        layer.backgroundColor = UIColor.white.cgColor
         
         return layer
     }()
@@ -103,9 +117,15 @@ fileprivate class ShutterButtonView: UIView {
     
     // MARK: - Layout
     
-    fileprivate override func layoutSubviews() {
-        bezelLayer.frame = bounds
+    override func layoutSubviews() {
+        super.layoutSubviews()
         
+        bezelLayer.frame = bounds
+        bezelLayer.cornerRadius = bounds.width/2
+        
+        let knobInset = bezelLayer.borderWidth + 1.5
+        knobLayer.frame = bounds.insetBy(dx: knobInset, dy: knobInset)
+        knobLayer.cornerRadius = knobLayer.bounds.height/2
     }
     
 }
