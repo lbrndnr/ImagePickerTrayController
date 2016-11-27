@@ -211,7 +211,7 @@ public class ImagePickerTrayController: UIViewController {
     }
     
     @objc fileprivate func takePicture() {
-        
+        cameraController.takePicture()
     }
     
     // MARK: -

@@ -52,6 +52,10 @@ class CameraOverlayView: UIButton {
         let flipCameraButtonSize = CGSize(width: 44, height: 44)
         let flipCameraButtonOrigin = CGPoint(x: bounds.maxX - flipCameraButtonSize.width, y: bounds.minY)
         flipCameraButton.frame = CGRect(origin: flipCameraButtonOrigin, size: flipCameraButtonSize)
+        
+        let shutterButtonViewSize = CGSize(width: 30, height: 30)
+        let shutterButtonViewOrigin = CGPoint(x: bounds.midX - shutterButtonViewSize.width/2, y: bounds.maxY - shutterButtonViewSize.height/2)
+        shutterButtonView.frame = CGRect(origin: shutterButtonViewOrigin, size: shutterButtonViewSize)
     }
     
 }
