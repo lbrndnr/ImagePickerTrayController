@@ -16,6 +16,18 @@ public enum ImagePickerMediaType {
     case imageAndVideo
 }
 
+@objc public protocol ImagePickerTrayControllerDelegate {
+    
+    @objc optional func controller(_ controller: ImagePickerTrayController, willSelectAsset asset: PHAsset)
+    @objc optional func controller(_ controller: ImagePickerTrayController, didSelectAsset asset: PHAsset)
+    
+    @objc optional func controller(_ controller: ImagePickerTrayController, willDeselectAsset asset: PHAsset)
+    @objc optional func controller(_ controller: ImagePickerTrayController, didDeselectAsset asset: PHAsset)
+    
+    @objc optional func controller(_ controller: ImagePickerTrayController, didTakeAsset asset: PHAsset)
+    
+}
+
 public class ImagePickerTrayController: UIViewController {
     
     fileprivate(set) lazy var collectionView: UICollectionView = {
@@ -37,6 +49,20 @@ public class ImagePickerTrayController: UIViewController {
         collectionView.register(ImageCell.self, forCellWithReuseIdentifier: NSStringFromClass(ImageCell.self))
         
         return collectionView
+    }()
+    
+    fileprivate lazy var cameraController: UIImagePickerController = {
+        let controller = UIImagePickerController()
+        controller.sourceType = .camera
+        controller.showsCameraControls = false
+        controller.allowsEditing = false
+        
+        let view = CameraOverlayView()
+        view.addTarget(self, action: #selector(takePicture), for: .touchUpInside)
+        view.flipCameraButton.addTarget(self, action: #selector(flipCamera), for: .touchUpInside)
+        controller.cameraOverlayView = view
+        
+        return controller
     }()
     
     fileprivate var assets = [PHAsset]()
@@ -80,18 +106,7 @@ public class ImagePickerTrayController: UIViewController {
         return [actionSection, cameraSection, assetSection]
     }
     
-    fileprivate lazy var cameraController: UIImagePickerController = {
-        let controller = UIImagePickerController()
-        controller.sourceType = .camera
-        controller.showsCameraControls = false
-        
-        let view = CameraOverlayView()
-        view.addTarget(self, action: #selector(takePicture), for: .touchUpInside)
-        view.flipCameraButton.addTarget(self, action: #selector(flipCamera), for: .touchUpInside)
-        controller.cameraOverlayView = view
-        
-        return controller
-    }()
+    public var delegate: ImagePickerTrayControllerDelegate?
     
     // MARK: - Initialization
     
@@ -271,7 +286,27 @@ extension ImagePickerTrayController: UICollectionViewDataSource {
 extension ImagePickerTrayController: UICollectionViewDelegate {
     
     public func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-        return (indexPath.section == sections.count - 1)
+        guard indexPath.section == sections.count - 1 else {
+            return false
+        }
+        
+        delegate?.controller(self, willSelectAsset: assets[indexPath.item])
+        
+        return true
+    }
+    
+    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        delegate?.controller?(self, didSelectAsset: assets[indexPath.item])
+    }
+    
+    public func collectionView(_ collectionView: UICollectionView, shouldDeselectItemAt indexPath: IndexPath) -> Bool {
+        delegate?.controller?(self, willDeselectAsset: assets[indexPath.item])
+        
+        return true
+    }
+    
+    public func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        delegate?.controller?(self, didDeselectAsset: assets[indexPath.item])
     }
     
 }
@@ -301,6 +336,15 @@ extension ImagePickerTrayController: UIScrollViewDelegate {
 
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         reloadActionCellDisclosureProgress()
+    }
+}
+
+// MARK: - UIImagePickerControllerDelegate
+
+extension ImagePickerTrayController: UIImagePickerControllerDelegate {
+    
+    public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        print(info)
     }
 }
 
