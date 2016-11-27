@@ -206,8 +206,9 @@ public class ImagePickerTrayController: UIViewController {
         })
     }
     
-    fileprivate func requestImageForAsset(_ asset: PHAsset, completion: @escaping (_ image: UIImage?) -> ()) {
+    fileprivate func requestImage(for asset: PHAsset, completion: @escaping (_ image: UIImage?) -> ()) {
         requestOptions.isSynchronous = true
+        let size = scale(imageSize: imageSize)
         
         // Workaround because PHImageManager.requestImageForAsset doesn't work for burst images
         if asset.representsBurst {
@@ -217,14 +218,20 @@ public class ImagePickerTrayController: UIViewController {
             }
         }
         else {
-            imageManager.requestImage(for: asset, targetSize: imageSize, contentMode: .aspectFill, options: requestOptions) { image, _ in
+            imageManager.requestImage(for: asset, targetSize: size, contentMode: .aspectFill, options: requestOptions) { image, _ in
                 completion(image)
             }
         }
     }
     
-    fileprivate func prefetchImagesForAsset(_ asset: PHAsset) {
-        imageManager.startCachingImages(for: [asset], targetSize: imageSize, contentMode: .aspectFill, options: requestOptions)
+    fileprivate func prefetchImages(for asset: PHAsset) {
+        let size = scale(imageSize: imageSize)
+        imageManager.startCachingImages(for: [asset], targetSize: size, contentMode: .aspectFill, options: requestOptions)
+    }
+    
+    fileprivate func scale(imageSize size: CGSize) -> CGSize {
+        let scale = UIScreen.main.scale
+        return CGSize(width: size.width * scale, height: size.height * scale)
     }
     
     // MARK: - Camera
@@ -278,7 +285,7 @@ extension ImagePickerTrayController: UICollectionViewDataSource {
             let asset = assets[indexPath.item]
             
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NSStringFromClass(ImageCell.self), for: indexPath) as! ImageCell
-            requestImageForAsset(asset) { cell.imageView.image = $0 }
+            requestImage(for: asset) { cell.imageView.image = $0 }
             cell.videoIndicatorView.isHidden = (asset.mediaType != .video)
             
             return cell
