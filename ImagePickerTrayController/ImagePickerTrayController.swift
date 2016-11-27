@@ -8,6 +8,7 @@
 
 import UIKit
 import Photos
+import MobileCoreServices
 
 /// The media type an instance of ImagePickerSheetController can display
 public enum ImagePickerMediaType {
@@ -53,9 +54,11 @@ public class ImagePickerTrayController: UIViewController {
     
     fileprivate lazy var cameraController: UIImagePickerController = {
         let controller = UIImagePickerController()
+        controller.delegate =  self
         controller.sourceType = .camera
         controller.showsCameraControls = false
         controller.allowsEditing = false
+        controller.mediaTypes = [kUTTypeImage as String, kUTTypeLivePhoto as String]
         
         let view = CameraOverlayView()
         view.addTarget(self, action: #selector(takePicture), for: .touchUpInside)
@@ -290,7 +293,7 @@ extension ImagePickerTrayController: UICollectionViewDelegate {
             return false
         }
         
-        delegate?.controller(self, willSelectAsset: assets[indexPath.item])
+        delegate?.controller?(self, willSelectAsset: assets[indexPath.item])
         
         return true
     }
@@ -341,11 +344,12 @@ extension ImagePickerTrayController: UIScrollViewDelegate {
 
 // MARK: - UIImagePickerControllerDelegate
 
-extension ImagePickerTrayController: UIImagePickerControllerDelegate {
+extension ImagePickerTrayController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        print(info)
+        print(info[UIImagePickerControllerLivePhoto])
     }
+    
 }
 
 // MARK: - UIViewControllerTransitioningDelegate
