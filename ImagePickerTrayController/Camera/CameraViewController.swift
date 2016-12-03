@@ -45,6 +45,10 @@ class CameraViewController: UIViewController {
     // MARK: - Camera
     
     fileprivate func reloadCameraDevice() {
+        if let oldInput = session.inputs.first as? AVCaptureInput {
+            session.removeInput(oldInput)
+        }
+        
         let device = AVCaptureDevice.defaultDevice(withDeviceType: .builtInWideAngleCamera, mediaType: AVMediaTypeVideo, position: devicePosition)
         do {
             let input = try AVCaptureDeviceInput(device: device)
@@ -58,11 +62,11 @@ class CameraViewController: UIViewController {
     @objc fileprivate func flipCamera() {
         devicePosition = (devicePosition == .back) ? .front : .back
         
-        if isViewLoaded {
-            UIView.transition(with: cameraView.previewView, duration: 0.2, options: UIViewAnimationOptions(rawValue: 0), animations: {
-                
-            }, completion: nil)
-        }
+//        if isViewLoaded {
+//            UIView.transition(with: cameraView.previewView, duration: 0.2, options: UIViewAnimationOptions(rawValue: 0), animations: {
+//                
+//            }, completion: nil)
+//        }
     }
     
     @objc fileprivate func takePicture() {
