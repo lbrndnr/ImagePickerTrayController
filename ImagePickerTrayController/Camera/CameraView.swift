@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import AVFoundation
 
 class CameraView: UIButton {
     
@@ -20,8 +19,7 @@ class CameraView: UIButton {
     
     fileprivate let shutterButtonView = ShutterButtonView()
     
-    let previewView = UIView()
-    fileprivate let previewLayer: AVCaptureVideoPreviewLayer
+    let previewView: CameraPreviewView
     
     override var isHighlighted: Bool {
         didSet {
@@ -31,11 +29,10 @@ class CameraView: UIButton {
     
     // MARK: - Initialization
     
-    init(previewLayer: AVCaptureVideoPreviewLayer) {
-        self.previewLayer = previewLayer
+    init(previewView: CameraPreviewView) {
+        self.previewView = previewView
         super.init(frame: .zero)
         
-        previewView.layer.addSublayer(previewLayer)
         addSubview(previewView)
         addSubview(flipCameraButton)
         addSubview(shutterButtonView)
@@ -51,7 +48,6 @@ class CameraView: UIButton {
         super.layoutSubviews()
         
         previewView.frame = bounds
-        previewLayer.frame = bounds
         
         let flipCameraButtonSize = CGSize(width: 44, height: 44)
         let flipCameraButtonOrigin = CGPoint(x: bounds.maxX - flipCameraButtonSize.width, y: bounds.minY)

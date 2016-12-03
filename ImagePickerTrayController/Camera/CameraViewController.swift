@@ -29,7 +29,7 @@ class CameraViewController: UIViewController {
         let layer = AVCaptureVideoPreviewLayer(session: session)!
         layer.videoGravity = AVLayerVideoGravityResizeAspectFill
         
-        let cameraView = CameraView(previewLayer: layer)
+        let cameraView = CameraView(previewView: CameraPreviewView(previewLayer: layer))
         cameraView.addTarget(self, action: #selector(takePicture), for: .touchUpInside)
         cameraView.flipCameraButton.addTarget(self, action: #selector(flipCamera), for: .touchUpInside)
         
@@ -60,13 +60,16 @@ class CameraViewController: UIViewController {
     }
     
     @objc fileprivate func flipCamera() {
-        devicePosition = (devicePosition == .back) ? .front : .back
+        let newPosition: AVCaptureDevicePosition = (devicePosition == .back) ? .front : .back
         
-//        if isViewLoaded {
-//            UIView.transition(with: cameraView.previewView, duration: 0.2, options: UIViewAnimationOptions(rawValue: 0), animations: {
-//                
-//            }, completion: nil)
-//        }
+        if isViewLoaded {
+            UIView.transition(with: cameraView.previewView, duration: 0.3, options: .transitionFlipFromLeft, animations: {
+//                self.devicePosition = newPosition
+            }, completion: nil)
+        }
+        else {
+            devicePosition = newPosition
+        }
     }
     
     @objc fileprivate func takePicture() {
