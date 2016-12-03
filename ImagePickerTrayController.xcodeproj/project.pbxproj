@@ -11,9 +11,10 @@
 		4909255B1DE4E600001027EC /* CameraCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 490925581DE4E600001027EC /* CameraCell.swift */; };
 		4909255C1DE4E600001027EC /* ImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 490925591DE4E600001027EC /* ImageCell.swift */; };
 		4909255E1DE4F089001027EC /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4909255D1DE4F089001027EC /* Images.xcassets */; };
+		49097EAB1DF3144A00D6CFF3 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49097EAA1DF3144A00D6CFF3 /* CameraView.swift */; };
+		49097EAD1DF3145300D6CFF3 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49097EAC1DF3145300D6CFF3 /* CameraViewController.swift */; };
 		491D5EB41DE451CD007EC01A /* ImagePickerAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491D5EB31DE451CD007EC01A /* ImagePickerAction.swift */; };
 		492715FA1DE7835200A9DD5B /* UIImageExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 492715F91DE7835200A9DD5B /* UIImageExtensions.swift */; };
-		4958FF381DEA33F7000E1201 /* CameraOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4958FF371DEA33F7000E1201 /* CameraOverlayView.swift */; };
 		4970E5261DB0DD400078ED23 /* ImagePickerTrayControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4970E5251DB0DD400078ED23 /* ImagePickerTrayControllerTests.swift */; };
 		4970E56D1DB0DE110078ED23 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4970E56C1DB0DE110078ED23 /* AppDelegate.swift */; };
 		4970E56F1DB0DE110078ED23 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4970E56E1DB0DE110078ED23 /* ViewController.swift */; };
@@ -56,9 +57,10 @@
 		490925581DE4E600001027EC /* CameraCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraCell.swift; sourceTree = "<group>"; };
 		490925591DE4E600001027EC /* ImageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageCell.swift; sourceTree = "<group>"; };
 		4909255D1DE4F089001027EC /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		49097EAA1DF3144A00D6CFF3 /* CameraView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
+		49097EAC1DF3145300D6CFF3 /* CameraViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		491D5EB31DE451CD007EC01A /* ImagePickerAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePickerAction.swift; sourceTree = "<group>"; };
 		492715F91DE7835200A9DD5B /* UIImageExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImageExtensions.swift; sourceTree = "<group>"; };
-		4958FF371DEA33F7000E1201 /* CameraOverlayView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraOverlayView.swift; sourceTree = "<group>"; };
 		4970E5211DB0DD400078ED23 /* ImagePickerTrayControllerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ImagePickerTrayControllerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4970E5251DB0DD400078ED23 /* ImagePickerTrayControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerTrayControllerTests.swift; sourceTree = "<group>"; };
 		4970E5271DB0DD400078ED23 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -107,10 +109,18 @@
 			children = (
 				490925571DE4E600001027EC /* ActionCell.swift */,
 				490925581DE4E600001027EC /* CameraCell.swift */,
-				4958FF371DEA33F7000E1201 /* CameraOverlayView.swift */,
 				490925591DE4E600001027EC /* ImageCell.swift */,
 			);
 			path = Cells;
+			sourceTree = "<group>";
+		};
+		49097EA91DF3144A00D6CFF3 /* Camera */ = {
+			isa = PBXGroup;
+			children = (
+				49097EAC1DF3145300D6CFF3 /* CameraViewController.swift */,
+				49097EAA1DF3144A00D6CFF3 /* CameraView.swift */,
+			);
+			path = Camera;
 			sourceTree = "<group>";
 		};
 		492715F81DE7835200A9DD5B /* Helpers */ = {
@@ -176,6 +186,7 @@
 			children = (
 				491D5EB31DE451CD007EC01A /* ImagePickerAction.swift */,
 				4970E5951DB0E0550078ED23 /* ImagePickerTrayController.swift */,
+				49097EA91DF3144A00D6CFF3 /* Camera */,
 				490925561DE4E600001027EC /* Cells */,
 				492715F81DE7835200A9DD5B /* Helpers */,
 				498CCB091DB103FA00A970B1 /* AnimationController.swift */,
@@ -358,12 +369,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4958FF381DEA33F7000E1201 /* CameraOverlayView.swift in Sources */,
 				498CCB0A1DB103FA00A970B1 /* AnimationController.swift in Sources */,
 				4909255A1DE4E600001027EC /* ActionCell.swift in Sources */,
 				492715FA1DE7835200A9DD5B /* UIImageExtensions.swift in Sources */,
 				491D5EB41DE451CD007EC01A /* ImagePickerAction.swift in Sources */,
+				49097EAD1DF3145300D6CFF3 /* CameraViewController.swift in Sources */,
 				4970E5961DB0E0550078ED23 /* ImagePickerTrayController.swift in Sources */,
+				49097EAB1DF3144A00D6CFF3 /* CameraView.swift in Sources */,
 				4909255B1DE4E600001027EC /* CameraCell.swift in Sources */,
 				4909255C1DE4E600001027EC /* ImageCell.swift in Sources */,
 				49FC9BD11DEB472900AC1AA8 /* UIEdgeInsetsExtensions.swift in Sources */,

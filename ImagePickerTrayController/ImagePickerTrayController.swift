@@ -9,6 +9,7 @@
 import UIKit
 import Photos
 import MobileCoreServices
+import AVFoundation
 
 fileprivate let itemSpacing: CGFloat = 1
 
@@ -55,22 +56,7 @@ public class ImagePickerTrayController: UIViewController {
         return collectionView
     }()
     
-    fileprivate lazy var cameraController: UIImagePickerController = {
-        let controller = UIImagePickerController()
-        controller.delegate =  self
-        controller.sourceType = .camera
-        controller.showsCameraControls = false
-        controller.allowsEditing = false
-        controller.cameraFlashMode = .off
-        controller.mediaTypes = [kUTTypeImage as String, kUTTypeLivePhoto as String]
-        
-        let view = CameraOverlayView()
-        view.addTarget(self, action: #selector(takePicture), for: .touchUpInside)
-        view.flipCameraButton.addTarget(self, action: #selector(flipCamera), for: .touchUpInside)
-        controller.cameraOverlayView = view
-        
-        return controller
-    }()
+    fileprivate let cameraViewController = CameraViewController()
     
     fileprivate var assets = [PHAsset]()
     
@@ -148,7 +134,14 @@ public class ImagePickerTrayController: UIViewController {
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        cameraViewController.session.startRunning()
         fetchAssets()
+    }
+    
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        cameraViewController.session.stopRunning()
     }
 
     public override func viewDidLayoutSubviews() {
@@ -234,16 +227,6 @@ public class ImagePickerTrayController: UIViewController {
         return CGSize(width: size.width * scale, height: size.height * scale)
     }
     
-    // MARK: - Camera
-    
-    @objc fileprivate func flipCamera() {
-        cameraController.cameraDevice = (cameraController.cameraDevice == .rear) ? .front : .rear
-    }
-    
-    @objc fileprivate func takePicture() {
-        cameraController.takePicture()
-    }
-    
     // MARK: -
     
     fileprivate func reloadActionCellDisclosureProgress() {
@@ -277,8 +260,7 @@ extension ImagePickerTrayController: UICollectionViewDataSource {
             return cell
         case 1:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NSStringFromClass(CameraCell.self), for: indexPath) as! CameraCell
-            cell.cameraView = cameraController.view
-            cell.cameraOverlayView = cameraController.cameraOverlayView
+            cell.cameraView = cameraViewController.view
             
             return cell
         case 2:
@@ -362,18 +344,6 @@ extension ImagePickerTrayController: UIScrollViewDelegate {
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         reloadActionCellDisclosureProgress()
     }
-}
-
-// MARK: - UIImagePickerControllerDelegate
-
-extension ImagePickerTrayController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    
-    public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
-            delegate?.controller?(self, didTakeImage: image)
-        }
-    }
-    
 }
 
 // MARK: - UIViewControllerTransitioningDelegate

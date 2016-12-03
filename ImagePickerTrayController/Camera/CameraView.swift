@@ -1,5 +1,5 @@
 //
-//  CameraOverlayView.swift
+//  CameraView.swift
 //  ImagePickerTrayController
 //
 //  Created by Laurin Brandner on 26.11.16.
@@ -7,17 +7,21 @@
 //
 
 import UIKit
+import AVFoundation
 
-class CameraOverlayView: UIButton {
+class CameraView: UIButton {
     
     let flipCameraButton: UIButton = {
         let button = FlipCameraButton()
-        button.setImage(UIImage(bundledName: "CameraOverlayView-CameraFlip"), for: .normal)
+        button.setImage(UIImage(bundledName: "CameraView-CameraFlip"), for: .normal)
         
         return button
     }()
     
     fileprivate let shutterButtonView = ShutterButtonView()
+    
+    let previewView = UIView()
+    fileprivate let previewLayer: AVCaptureVideoPreviewLayer
     
     override var isHighlighted: Bool {
         didSet {
@@ -27,27 +31,27 @@ class CameraOverlayView: UIButton {
     
     // MARK: - Initialization
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init(previewLayer: AVCaptureVideoPreviewLayer) {
+        self.previewLayer = previewLayer
+        super.init(frame: .zero)
         
-        initialize()
+        previewView.layer.addSublayer(previewLayer)
+        addSubview(previewView)
+        addSubview(flipCameraButton)
+        addSubview(shutterButtonView)
     }
     
     required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        
-        initialize()
-    }
-    
-    fileprivate func initialize() {
-        addSubview(flipCameraButton)
-        addSubview(shutterButtonView)
+        fatalError("init(coder:) has not been implemented")
     }
     
     // MARK: - Layout
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        
+        previewView.frame = bounds
+        previewLayer.frame = bounds
         
         let flipCameraButtonSize = CGSize(width: 44, height: 44)
         let flipCameraButtonOrigin = CGPoint(x: bounds.maxX - flipCameraButtonSize.width, y: bounds.minY)
