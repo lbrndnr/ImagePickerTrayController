@@ -9,6 +9,7 @@
 import UIKit
 import Photos
 import MobileCoreServices
+import QuickLook
 
 fileprivate let itemSpacing: CGFloat = 1
 
@@ -145,6 +146,13 @@ public class ImagePickerTrayController: UIViewController {
         self.imageSize = CGSize(width: side, height: side)
     }
     
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        let recognizer = UILongPressGestureRecognizer(target: self, action: #selector(didLongPress(recognizer:)))
+        collectionView.addGestureRecognizer(recognizer)
+    }
+    
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -250,6 +258,12 @@ public class ImagePickerTrayController: UIViewController {
         if sections[0] > 0 {
             actionCell?.disclosureProcess = (collectionView.contentOffset.x / (actionCellWidth/2))
         }
+    }
+    
+    @objc fileprivate func didLongPress(recognizer: UILongPressGestureRecognizer) {
+        let controller = QLPreviewController()
+        controller.dataSource = self
+        present(controller, animated: true, completion: nil)
     }
     
 }
@@ -372,6 +386,25 @@ extension ImagePickerTrayController: UIImagePickerControllerDelegate, UINavigati
         if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
             delegate?.controller?(self, didTakeImage: image)
         }
+    }
+    
+}
+
+// MARK: - QLPreviewControllerDataSource
+
+extension ImagePickerTrayController: QLPreviewControllerDataSource {
+    
+    public func numberOfPreviewItems(in controller: QLPreviewController) -> Int {
+        return assets.count
+    }
+
+    public func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
+        let asset = assets[index]
+        guard let identifier = asset.localIdentifier.components(separatedBy: "/").first else {
+            fatalError()
+        }
+        
+        return NSURL(string: "assets-library://asset/asset.JPG?id=\(identifier)&ext=JPG")!
     }
     
 }
