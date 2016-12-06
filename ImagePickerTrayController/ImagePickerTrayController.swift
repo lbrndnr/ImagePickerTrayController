@@ -286,7 +286,7 @@ extension ImagePickerTrayController: UICollectionViewDataSource {
             
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NSStringFromClass(ImageCell.self), for: indexPath) as! ImageCell
             requestImage(for: asset) { cell.imageView.image = $0 }
-            cell.videoIndicatorView.isHidden = (asset.mediaType != .video)
+            cell.accessoryType = (asset.mediaType == .video) ? .video : .none
             
             return cell
         default:
