@@ -170,21 +170,11 @@ public class ImagePickerTrayController: UIViewController {
     fileprivate func fetchAssets() {
         let options = PHFetchOptions()
         options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-        options.predicate = NSPredicate(format: "mediaType = %d OR mediaType = %d", PHAssetMediaType.image.rawValue, PHAssetMediaType.video.rawValue)
-        options.includeAssetSourceTypes = .typeUserLibrary
         options.fetchLimit = 100
         
         let result = PHAsset.fetchAssets(with: options)
-        let requestOptions = PHImageRequestOptions()
-        requestOptions.isSynchronous = true
-        requestOptions.deliveryMode = .fastFormat
-        
-        result.enumerateObjects(options: [], using: { asset, index, stop in
-            self.imageManager.requestImageData(for: asset, options: requestOptions) { data, _, _, info in
-                if data != nil {
-                    self.assets.append(asset)
-                }
-            }
+        result.enumerateObjects({ asset, index, stop in
+            self.assets.append(asset)
         })
     }
     
