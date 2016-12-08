@@ -10,11 +10,6 @@ import UIKit
 
 class ImageCell: UICollectionViewCell {
     
-    enum ImageCellAccessoryType {
-        case video
-        case none
-    }
-    
     let imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
@@ -25,29 +20,27 @@ class ImageCell: UICollectionViewCell {
     
     fileprivate let shadowView = UIImageView(image: UIImage(bundledName: "ImageCell-Shadow"))
     
-    fileprivate let videoIndicatorView: UIImageView = {
-        let imageView = UIImageView(image: UIImage(bundledName: "ImageCell-Video"))
-        imageView.isHidden = true
-        
-        return imageView
-    }()
+    fileprivate let videoIndicatorView = UIImageView(image: UIImage(bundledName: "ImageCell-Video"))
     
-    fileprivate let checkmarkView: UIImageView = {
-        let imageView  = UIImageView(image: UIImage(bundledName: "ImageCell-Selected"))
-        imageView.isHidden = true
-        
-        return imageView
-    }()
+    fileprivate let cloudIndicatorView = UIImageView(image: UIImage(bundledName: "ImageCell-Cloud"))
     
-    var accessoryType: ImageCellAccessoryType = .none {
+    fileprivate let checkmarkView = UIImageView(image: UIImage(bundledName: "ImageCell-Selected"))
+    
+    var isVideo = false {
         didSet {
-            reloadAccessoryType()
+            reloadAccessoryViews()
+        }
+    }
+    
+    var isRemote = false {
+        didSet {
+            reloadAccessoryViews()
         }
     }
     
     override var isSelected: Bool {
         didSet {
-            checkmarkView.isHidden = !isSelected
+            reloadCheckmarkView()
         }
     }
     
@@ -69,28 +62,31 @@ class ImageCell: UICollectionViewCell {
         contentView.addSubview(imageView)
         contentView.addSubview(shadowView)
         contentView.addSubview(videoIndicatorView)
+        contentView.addSubview(cloudIndicatorView)
         contentView.addSubview(checkmarkView)
-        reloadAccessoryType()
+        
+        reloadAccessoryViews()
+        reloadCheckmarkView()
     }
     
     // MARK: - Other Methods
     
-    fileprivate func reloadAccessoryType() {
-        switch accessoryType {
-        case .video:
-            shadowView.isHidden = false
-            videoIndicatorView.isHidden = false
-        default:
-            shadowView.isHidden = true
-            videoIndicatorView.isHidden = true
-        }
+    fileprivate func reloadAccessoryViews() {
+        videoIndicatorView.isHidden = !isVideo
+        cloudIndicatorView.isHidden = !isRemote
+        shadowView.isHidden = videoIndicatorView.isHidden && cloudIndicatorView.isHidden
+    }
+    
+    fileprivate func reloadCheckmarkView() {
+        checkmarkView.isHidden = !isSelected
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
         
         imageView.image = nil
-        accessoryType = .none
+        isVideo = false
+        isRemote = false
     }
     
     // MARK: - Layout
@@ -99,14 +95,18 @@ class ImageCell: UICollectionViewCell {
         super.layoutSubviews()
         
         imageView.frame = bounds
+        let inset: CGFloat = 8
         
         let shadowHeight = shadowView.image?.size.height ?? 0
         shadowView.frame = CGRect(origin: CGPoint(x: bounds.minX, y: bounds.maxY-shadowHeight), size: CGSize(width: bounds.width, height: shadowHeight))
         
-        let videoIndicatorViewSize = videoIndicatorView.image?.size ?? CGSize()
-        let inset: CGFloat = 8
+        let videoIndicatorViewSize = videoIndicatorView.image?.size ?? .zero
         let videoIndicatorViewOrigin = CGPoint(x: bounds.minX + inset, y: bounds.maxY - inset - videoIndicatorViewSize.height)
         videoIndicatorView.frame = CGRect(origin: videoIndicatorViewOrigin, size: videoIndicatorViewSize)
+        
+        let cloudIndicatorViewSize = cloudIndicatorView.image?.size ?? .zero
+        let cloudIndicatorViewOrigin = CGPoint(x: bounds.maxX - inset - cloudIndicatorViewSize.width, y: bounds.maxY - inset - cloudIndicatorViewSize.height)
+        cloudIndicatorView.frame = CGRect(origin: cloudIndicatorViewOrigin, size: cloudIndicatorViewSize)
         
         let checkmarkSize = checkmarkView.frame.size
         checkmarkView.center = CGPoint(x: bounds.maxX-checkmarkSize.width/2-4, y: bounds.maxY-checkmarkSize.height/2-4)
