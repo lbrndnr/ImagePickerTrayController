@@ -18,23 +18,29 @@ class ImageCell: UICollectionViewCell {
         return imageView
     }()
     
-    let videoIndicatorView: UIImageView = {
-        let imageView = UIImageView(image: UIImage(bundledName: "ImageCell-Video"))
-        imageView.isHidden = true
-        
-        return imageView
-    }()
+    fileprivate let shadowView = UIImageView(image: UIImage(bundledName: "ImageCell-Shadow"))
     
-    fileprivate let checkmarkView: UIImageView = {
-        let imageView  = UIImageView(image: UIImage(bundledName: "ImageCell-Selected"))
-        imageView.isHidden = true
-        
-        return imageView
-    }()
+    fileprivate let videoIndicatorView = UIImageView(image: UIImage(bundledName: "ImageCell-Video"))
+    
+    fileprivate let cloudIndicatorView = UIImageView(image: UIImage(bundledName: "ImageCell-Cloud"))
+    
+    fileprivate let checkmarkView = UIImageView(image: UIImage(bundledName: "ImageCell-Selected"))
+    
+    var isVideo = false {
+        didSet {
+            reloadAccessoryViews()
+        }
+    }
+    
+    var isRemote = false {
+        didSet {
+            reloadAccessoryViews()
+        }
+    }
     
     override var isSelected: Bool {
         didSet {
-            checkmarkView.isHidden = !isSelected
+            reloadCheckmarkView()
         }
     }
     
@@ -54,17 +60,33 @@ class ImageCell: UICollectionViewCell {
     
     fileprivate func initialize() {
         contentView.addSubview(imageView)
+        contentView.addSubview(shadowView)
         contentView.addSubview(videoIndicatorView)
+        contentView.addSubview(cloudIndicatorView)
         contentView.addSubview(checkmarkView)
+        
+        reloadAccessoryViews()
+        reloadCheckmarkView()
     }
     
     // MARK: - Other Methods
+    
+    fileprivate func reloadAccessoryViews() {
+        videoIndicatorView.isHidden = !isVideo
+        cloudIndicatorView.isHidden = !isRemote
+        shadowView.isHidden = videoIndicatorView.isHidden && cloudIndicatorView.isHidden
+    }
+    
+    fileprivate func reloadCheckmarkView() {
+        checkmarkView.isHidden = !isSelected
+    }
     
     override func prepareForReuse() {
         super.prepareForReuse()
         
         imageView.image = nil
-        videoIndicatorView.isHidden = true
+        isVideo = false
+        isRemote = false
     }
     
     // MARK: - Layout
@@ -73,11 +95,18 @@ class ImageCell: UICollectionViewCell {
         super.layoutSubviews()
         
         imageView.frame = bounds
-        
-        let videoIndicatorViewSize = videoIndicatorView.image?.size ?? CGSize()
         let inset: CGFloat = 8
+        
+        let shadowHeight = shadowView.image?.size.height ?? 0
+        shadowView.frame = CGRect(origin: CGPoint(x: bounds.minX, y: bounds.maxY-shadowHeight), size: CGSize(width: bounds.width, height: shadowHeight))
+        
+        let videoIndicatorViewSize = videoIndicatorView.image?.size ?? .zero
         let videoIndicatorViewOrigin = CGPoint(x: bounds.minX + inset, y: bounds.maxY - inset - videoIndicatorViewSize.height)
         videoIndicatorView.frame = CGRect(origin: videoIndicatorViewOrigin, size: videoIndicatorViewSize)
+        
+        let cloudIndicatorViewSize = cloudIndicatorView.image?.size ?? .zero
+        let cloudIndicatorViewOrigin = CGPoint(x: bounds.maxX - inset - cloudIndicatorViewSize.width, y: bounds.maxY - inset - cloudIndicatorViewSize.height)
+        cloudIndicatorView.frame = CGRect(origin: cloudIndicatorViewOrigin, size: cloudIndicatorViewSize)
         
         let checkmarkSize = checkmarkView.frame.size
         checkmarkView.center = CGPoint(x: bounds.maxX-checkmarkSize.width/2-4, y: bounds.maxY-checkmarkSize.height/2-4)

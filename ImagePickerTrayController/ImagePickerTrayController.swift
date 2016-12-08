@@ -85,10 +85,7 @@ public class ImagePickerTrayController: UIViewController {
     
     fileprivate let imageManager = PHCachingImageManager()
     
-    /// The media type of the displayed assets
-    open let mediaType: ImagePickerMediaType = .imageAndVideo
-    
-    open var allowsMultipleSelection = true {
+    public var allowsMultipleSelection = true {
         didSet {
             if isViewLoaded {
                 collectionView.allowsMultipleSelection = allowsMultipleSelection
@@ -181,36 +178,11 @@ public class ImagePickerTrayController: UIViewController {
     fileprivate func fetchAssets() {
         let options = PHFetchOptions()
         options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-        
-        switch mediaType {
-        case .image:
-            options.predicate = NSPredicate(format: "mediaType = %d", PHAssetMediaType.image.rawValue)
-        case .video:
-            options.predicate = NSPredicate(format: "mediaType = %d", PHAssetMediaType.video.rawValue)
-        case .imageAndVideo:
-            options.predicate = NSPredicate(format: "mediaType = %d OR mediaType = %d", PHAssetMediaType.image.rawValue, PHAssetMediaType.video.rawValue)
-        }
-        
-        let fetchLimit = 100
-        options.fetchLimit = fetchLimit
+        options.fetchLimit = 100
         
         let result = PHAsset.fetchAssets(with: options)
-        let requestOptions = PHImageRequestOptions()
-        requestOptions.isSynchronous = true
-        requestOptions.deliveryMode = .fastFormat
-        
-        result.enumerateObjects(options: [], using: { asset, index, stop in
-            defer {
-                if self.assets.count >= fetchLimit {
-                    stop.initialize(to: true)
-                }
-            }
-            
-            self.imageManager.requestImageData(for: asset, options: requestOptions) { data, _, _, info in
-                if data != nil {
-                    self.assets.append(asset)
-                }
-            }
+        result.enumerateObjects({ asset, index, stop in
+            self.assets.append(asset)
         })
     }
     
@@ -299,12 +271,13 @@ extension ImagePickerTrayController: UICollectionViewDataSource {
             let asset = assets[indexPath.item]
             
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NSStringFromClass(ImageCell.self), for: indexPath) as! ImageCell
+            cell.isVideo = (asset.mediaType == .video)
+            cell.isRemote = (asset.sourceType != .typeUserLibrary)
             requestImage(for: asset) { cell.imageView.image = $0 }
-            cell.videoIndicatorView.isHidden = (asset.mediaType != .video)
             
             return cell
         default:
-            fatalError("More than 3 sections are invalid.")
+            fatalError("More than 3 sections is invalid.")
         }
     }
     
