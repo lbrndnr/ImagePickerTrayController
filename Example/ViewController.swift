@@ -9,13 +9,31 @@
 import UIKit
 import ImagePickerTrayController
 
-class ViewController: UITableViewController {
+class ViewController: UIViewController {
     
     var rows: [Int] {
         return (0..<100).map { $0 }
     }
+    
+    fileprivate lazy var tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.dataSource = self
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        
+        return tableView
+    }()
 
     // MARK: - View Lifecycle
+    
+    override func loadView() {
+        super.loadView()
+        
+        view.addSubview(tableView)
+        tableView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        tableView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        tableView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,6 +42,10 @@ class ViewController: UITableViewController {
         
         let cellClass = UITableViewCell.self
         tableView.register(cellClass, forCellReuseIdentifier: NSStringFromClass(cellClass))
+        
+        let center = NotificationCenter.default
+        center.addObserver(self, selector: #selector(willShowImagePickerTray(notification:)), name: ImagePickerTrayWillShow, object: nil)
+        center.addObserver(self, selector: #selector(willHideImagePickerTray(notification:)), name: ImagePickerTrayWillHide, object: nil)
     }
     
     // MARK: -
@@ -36,24 +58,54 @@ class ViewController: UITableViewController {
         controller.add(action: .libraryAction { _ in
             print("Show Library")
         })
-        present(controller, animated: true, completion: nil)
+        controller.show(in: view)
+    }
+    
+   @objc fileprivate func willShowImagePickerTray(notification: Notification) {
+        guard let userInfo = notification.userInfo,
+                 let frame = userInfo[ImagePickerTrayFrameUserInfoKey] as? CGRect else {
+            return
+        }
+        
+        let duration: TimeInterval = (userInfo[ImagePickerTrayAnimationDurationUserInfoKey] as? TimeInterval) ?? 0
+        animateContentInset(inset: frame.height, duration: duration, curve: UIViewAnimationCurve(rawValue: 0)!)
+    }
+    
+    @objc fileprivate func willHideImagePickerTray(notification: Notification) {
+        guard let userInfo = notification.userInfo else {
+            return
+        }
+        
+        let duration: TimeInterval = (userInfo[ImagePickerTrayAnimationDurationUserInfoKey] as? TimeInterval) ?? 0
+        animateContentInset(inset: 0, duration: duration, curve: UIViewAnimationCurve(rawValue: 0)!)
+    }
+    
+    fileprivate func animateContentInset(inset bottomInset: CGFloat, duration: TimeInterval, curve: UIViewAnimationCurve) {
+        var inset = tableView.contentInset
+        inset.bottom = bottomInset
+        
+        let options = UIViewAnimationOptions(rawValue: UInt(curve.rawValue) << 16)
+        UIView.animate(withDuration: duration, delay: 0, options: options, animations: {
+            self.tableView.contentInset = inset
+            self.tableView.scrollIndicatorInsets = inset
+        }, completion: nil)
     }
 
 }
 
 // MARK: - UITableViewDataSource
 
-extension ViewController {
+extension ViewController: UITableViewDataSource {
     
-    override func numberOfSections(in tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return rows.count
     }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: NSStringFromClass(UITableViewCell.self), for: indexPath)
         cell.textLabel?.text = String(rows[indexPath.row])
         

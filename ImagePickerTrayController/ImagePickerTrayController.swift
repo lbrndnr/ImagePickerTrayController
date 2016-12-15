@@ -31,6 +31,17 @@ public enum ImagePickerMediaType {
     
 }
 
+public let ImagePickerTrayWillShow: Notification.Name = Notification.Name(rawValue: "ch.laurinbrandner.ImagePickerTrayWillShow")
+public let ImagePickerTrayDidShow: Notification.Name = Notification.Name(rawValue: "ch.laurinbrandner.ImagePickerTrayDidShow")
+
+public let ImagePickerTrayWillHide: Notification.Name = Notification.Name(rawValue: "ch.laurinbrandner.ImagePickerTrayWillHide")
+public let ImagePickerTrayDidHide: Notification.Name = Notification.Name(rawValue: "ch.laurinbrandner.ImagePickerTrayDidHide")
+
+public let ImagePickerTrayFrameUserInfoKey = "ImagePickerTrayFrame"
+public let ImagePickerTrayAnimationDurationUserInfoKey = "ImagePickerTrayAnimationDuration"
+
+fileprivate let animationDuration: TimeInterval = 0.2
+
 public class ImagePickerTrayController: UIViewController {
     
     fileprivate(set) lazy var collectionView: UICollectionView = {
@@ -216,12 +227,41 @@ public class ImagePickerTrayController: UIViewController {
         cameraController.takePicture()
     }
     
+    // MARK: - Presentation
+    
+    public func show(in superview: UIView, animated: Bool = true) {
+        superview.addSubview(view)
+        
+        let superframe = superview.frame
+        let size = CGSize(width: superframe.width, height: height)
+        view.frame = CGRect(origin: CGPoint(x: superframe.minX, y: superframe.maxY), size: size)
+        
+        let duration = animated ? animationDuration : nil
+        post(name: ImagePickerTrayWillShow, frame: view.frame, duration: duration)
+        
+        let finalFrame = CGRect(origin: CGPoint(x: superframe.minX, y: superframe.maxY-height), size: size)
+        UIView.animate(withDuration: duration ?? 0, animations: {
+            self.view.frame = finalFrame
+        }, completion: { _ in
+            self.post(name: ImagePickerTrayDidShow, frame: finalFrame, duration: nil)
+        })
+    }
+    
     // MARK: -
     
     fileprivate func reloadActionCellDisclosureProgress() {
         if sections[0] > 0 {
             actionCell?.disclosureProcess = (collectionView.contentOffset.x / (actionCellWidth/2))
         }
+    }
+    
+    fileprivate func post(name: Notification.Name, frame: CGRect, duration: TimeInterval?) {
+        var userInfo: [AnyHashable: Any] = [ImagePickerTrayFrameUserInfoKey: frame]
+        if let duration = duration {
+            userInfo[ImagePickerTrayAnimationDurationUserInfoKey] = duration
+        }
+        
+        NotificationCenter.default.post(name: name, object: self, userInfo: userInfo)
     }
     
 }
@@ -345,20 +385,6 @@ extension ImagePickerTrayController: UIImagePickerControllerDelegate, UINavigati
         if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
             delegate?.controller?(self, didTakeImage: image)
         }
-    }
-    
-}
-
-// MARK: - UIViewControllerTransitioningDelegate
-
-extension ImagePickerTrayController: UIViewControllerTransitioningDelegate {
-    
-    public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        return AnimationController(imagePickerTrayController: self, presenting: true)
-    }
-    
-    public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        return AnimationController(imagePickerTrayController: self, presenting: false)
     }
     
 }
