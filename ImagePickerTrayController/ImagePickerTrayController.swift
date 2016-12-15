@@ -8,7 +8,6 @@
 
 import UIKit
 import Photos
-import MobileCoreServices
 
 fileprivate let itemSpacing: CGFloat = 1
 
@@ -73,7 +72,6 @@ public class ImagePickerTrayController: UIViewController {
         controller.showsCameraControls = false
         controller.allowsEditing = false
         controller.cameraFlashMode = .off
-        controller.mediaTypes = [kUTTypeImage as String, kUTTypeLivePhoto as String]
         
         let view = CameraOverlayView()
         view.addTarget(self, action: #selector(takePicture), for: .touchUpInside)
