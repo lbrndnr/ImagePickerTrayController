@@ -377,7 +377,15 @@ extension ImagePickerTrayController: QLPreviewControllerDataSource {
             fatalError()
         }
         
-        return NSURL(string: "assets-library://asset/asset.JPG?id=\(identifier)&ext=JPG")!
+        let tmpDirURL = NSURL.fileURL(withPath: NSTemporaryDirectory(),isDirectory: true) as NSURL
+        let fileURL = tmpDirURL.appendingPathComponent(identifier)!.appendingPathExtension("jpeg")
+        
+        requestOptions.isSynchronous = true
+        imageManager.requestImageData(for: asset, options: requestOptions) { data, _, _, _ in
+            try! data?.write(to: fileURL)
+        }
+        
+        return fileURL as NSURL
     }
     
 }
