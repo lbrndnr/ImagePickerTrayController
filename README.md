@@ -7,7 +7,7 @@
 ImagePickerTrayController is a component that replicates the custom photo action sheet in iMessage. It's the iOS 10 version of  [ImagePickerSheetController](https://github.com/lbrndnr/ImagePickerSheetController). 
 ⚠️Note that this library is still WIP⚠️
 
-![Screenshot](https://raw.githubusercontent.com/lbrndnr/ImagePickerTrayController/master/Screenshots/Example.png)
+<img src="https://raw.githubusercontent.com/lbrndnr/ImagePickerTrayController/master/Screenshots/Example.png" width="320">
 
 ### Example
 
