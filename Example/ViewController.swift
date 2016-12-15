@@ -22,6 +22,8 @@ class ViewController: UIViewController {
         
         return tableView
     }()
+    
+    fileprivate var imagePickerTrayController: ImagePickerTrayController?
 
     // MARK: - View Lifecycle
     
@@ -38,7 +40,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Images", style: .plain, target: self, action: #selector(presentImagePickerTray(_:)))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Images", style: .plain, target: self, action: #selector(toggleImagePickerTray(_:)))
         
         let cellClass = UITableViewCell.self
         tableView.register(cellClass, forCellReuseIdentifier: NSStringFromClass(cellClass))
@@ -50,7 +52,16 @@ class ViewController: UIViewController {
     
     // MARK: -
     
-    func presentImagePickerTray(_: UITapGestureRecognizer) {
+    @objc fileprivate func toggleImagePickerTray(_: UIBarButtonItem) {
+        if imagePickerTrayController != nil {
+            hideImagePickerTray()
+        }
+        else {
+            showImagePickerTray()
+        }
+    }
+    
+    fileprivate func showImagePickerTray() {
         let controller = ImagePickerTrayController()
         controller.add(action: .cameraAction { _ in
             print("Show Camera")
@@ -59,9 +70,15 @@ class ViewController: UIViewController {
             print("Show Library")
         })
         controller.show(in: view)
+        imagePickerTrayController = controller
     }
     
-   @objc fileprivate func willShowImagePickerTray(notification: Notification) {
+    fileprivate func hideImagePickerTray() {
+        imagePickerTrayController?.hide()
+        imagePickerTrayController = nil
+    }
+    
+    @objc fileprivate func willShowImagePickerTray(notification: Notification) {
         guard let userInfo = notification.userInfo,
                  let frame = userInfo[ImagePickerTrayFrameUserInfoKey] as? CGRect else {
             return

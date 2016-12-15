@@ -247,6 +247,25 @@ public class ImagePickerTrayController: UIViewController {
         })
     }
     
+    public func hide(animated: Bool = true) {
+        guard let superframe = view.superview?.frame else {
+            return
+        }
+        
+        let size = CGSize(width: superframe.width, height: height)
+        let finalFrame = CGRect(origin: CGPoint(x: superframe.minX, y: superframe.maxY), size: size)
+        
+        let duration = animated ? animationDuration : nil
+        post(name: ImagePickerTrayWillHide, frame: view.frame, duration: duration)
+        
+        UIView.animate(withDuration: duration ?? 0, animations: {
+            self.view.frame = finalFrame
+        }, completion: { _ in
+            self.view.removeFromSuperview()
+            self.post(name: ImagePickerTrayDidHide, frame: finalFrame, duration: nil)
+        })
+    }
+    
     // MARK: -
     
     fileprivate func reloadActionCellDisclosureProgress() {
