@@ -101,9 +101,13 @@ class ViewController: UIViewController {
         var inset = tableView.contentInset
         inset.bottom = bottomInset
         
+        var offset = tableView.contentOffset
+        offset.y = max(0, offset.y - bottomInset)
+        
         let options = UIViewAnimationOptions(rawValue: UInt(curve.rawValue) << 16)
         UIView.animate(withDuration: duration, delay: 0, options: options, animations: {
             self.tableView.contentInset = inset
+            self.tableView.contentOffset = offset
             self.tableView.scrollIndicatorInsets = inset
         }, completion: nil)
     }
