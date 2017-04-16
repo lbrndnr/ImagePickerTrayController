@@ -27,7 +27,7 @@ class AnimationController: NSObject {
 extension AnimationController: UIViewControllerAnimatedTransitioning {
     
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return 0.3
+        return 0.25
     }
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
@@ -40,7 +40,7 @@ extension AnimationController: UIViewControllerAnimatedTransitioning {
     }
     
     private func present(with gestureRecognizer: UIPanGestureRecognizer, using transitionContext: UIViewControllerContextTransitioning) {
-        guard let to = transitionContext.viewController(forKey: .to) else {
+        guard let to = transitionContext.viewController(forKey: .to) as? ImagePickerTrayController else {
             transitionContext.completeTransition(false)
             return
         }
@@ -49,15 +49,19 @@ extension AnimationController: UIViewControllerAnimatedTransitioning {
         container.window?.addGestureRecognizer(gestureRecognizer)
         
         container.addSubview(to.view)
-        container.frame = CGRect(x: 0, y: container.bounds.height-216, width: container.bounds.width, height: 216)
-        to.view.frame = container.bounds
+        container.frame = CGRect(x: 0, y: container.bounds.height-to.trayHeight, width: container.bounds.width, height: to.trayHeight)
+        to.view.transform = CGAffineTransform(translationX: 0, y: to.trayHeight)
         
-        transitionContext.completeTransition(true)
+        let duration = transitionDuration(using: transitionContext)
+        UIView.animateKeyframes(withDuration: duration, delay: 0, options: .allowUserInteraction, animations: {
+            to.view.transform = .identity
+        }, completion: { finished in
+            transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
+        })
     }
     
     private func dismiss(using transitionContext: UIViewControllerContextTransitioning) {
-        guard let to = transitionContext.viewController(forKey: .to),
-            let from = transitionContext.viewController(forKey: .from) as? ImagePickerTrayController else {
+        guard let from = transitionContext.viewController(forKey: .from) as? ImagePickerTrayController else {
                 transitionContext.completeTransition(false)
                 return
         }
@@ -67,7 +71,6 @@ extension AnimationController: UIViewControllerAnimatedTransitioning {
             from.view.transform = CGAffineTransform(translationX: 0, y: from.trayHeight)
         }, completion: { finished in
             from.view.removeFromSuperview()
-//            to.view.removeFromSuperview()
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         })
     }

@@ -22,8 +22,6 @@ class ViewController: UIViewController {
         
         return tableView
     }()
-    
-    fileprivate var imagePickerTrayController: ImagePickerTrayController?
 
     // MARK: - View Lifecycle
     
@@ -53,7 +51,7 @@ class ViewController: UIViewController {
     // MARK: -
     
     @objc fileprivate func toggleImagePickerTray(_: UIBarButtonItem) {
-        if imagePickerTrayController != nil {
+        if presentedViewController != nil {
             hideImagePickerTray()
         }
         else {
@@ -70,12 +68,10 @@ class ViewController: UIViewController {
             print("Show Library")
         })
         present(controller, animated: true, completion: nil)
-        imagePickerTrayController = controller
     }
     
     fileprivate func hideImagePickerTray() {
-        imagePickerTrayController?.dismiss(animated: true, completion: nil)
-        imagePickerTrayController = nil
+        dismiss(animated: true, completion: nil)
     }
     
     @objc fileprivate func willShowImagePickerTray(notification: Notification) {
