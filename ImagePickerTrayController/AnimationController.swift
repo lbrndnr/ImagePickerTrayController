@@ -70,7 +70,9 @@ extension AnimationController: UIViewControllerAnimatedTransitioning {
         UIView.animateKeyframes(withDuration: duration, delay: 0, options: .allowUserInteraction, animations: { 
             from.view.transform = CGAffineTransform(translationX: 0, y: from.trayHeight)
         }, completion: { finished in
-            from.view.removeFromSuperview()
+            if finished {
+                from.view.removeFromSuperview()
+            }
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         })
     }

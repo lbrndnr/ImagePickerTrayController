@@ -396,7 +396,7 @@ extension ImagePickerTrayController: UIViewControllerTransitioningDelegate {
     }
     
     public func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
-        return (interactiveDismissal?.hasBeenRecognized ?? false) ? interactiveDismissal : nil
+        return (interactiveDismissal?.gestureWasRecognized ?? false) ? interactiveDismissal : nil
     }
     
 }

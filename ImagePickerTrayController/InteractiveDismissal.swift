@@ -10,10 +10,13 @@ import Foundation
 
 class InteractiveDismissal: UIPercentDrivenInteractiveTransition {
     
-    fileprivate(set) var hasBeenRecognized = false
+    fileprivate(set) var gestureWasRecognized = false
+    fileprivate var gestureFinished = false
     
     fileprivate weak var trayController: ImagePickerTrayController?
     let gestureRecognizer = UIPanGestureRecognizer()
+    
+    // MARK: - Initialization
     
     init(trayController: ImagePickerTrayController) {
         self.trayController = trayController
@@ -21,6 +24,18 @@ class InteractiveDismissal: UIPercentDrivenInteractiveTransition {
         
         gestureRecognizer.addTarget(self, action: #selector(didRecognizePan(gestureRecognizer:)))
         gestureRecognizer.delegate = self
+    }
+    
+    // MARK: - Gesture
+    
+    override func cancel() {
+        gestureFinished = true
+        super.cancel()
+    }
+    
+    override func finish() {
+        gestureFinished = true
+        super.finish()
     }
     
 }
@@ -31,7 +46,16 @@ extension InteractiveDismissal: UIGestureRecognizerDelegate {
         return true
     }
     
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        gestureFinished = false
+        return true
+    }
+    
     @objc fileprivate func didRecognizePan(gestureRecognizer: UIPanGestureRecognizer) {
+        guard !gestureFinished else {
+            return
+        }
+        
         guard let trayController = trayController,
                         let view = gestureRecognizer.view else {
             cancel()
@@ -46,12 +70,12 @@ extension InteractiveDismissal: UIGestureRecognizerDelegate {
             let translation = gestureRecognizer.translation(in: gestureRecognizer.view)
             let start = end - translation.y
             let threshold = view.frame.maxY - trayController.trayHeight
-            if hasBeenRecognized {
+            if gestureWasRecognized {
                 let progress = end-threshold
                 update(progress/trayController.trayHeight)
             }
             else if start < threshold && end >= threshold {
-                hasBeenRecognized = true
+                gestureWasRecognized = true
                 trayController.dismiss(animated: true, completion: nil)
             }
         }
@@ -59,7 +83,12 @@ extension InteractiveDismissal: UIGestureRecognizerDelegate {
             cancel()
         }
         else if gestureRecognizer.state == .ended {
-            finish()
+            if gestureRecognizer.velocity(in: gestureRecognizer.view).y < 0 {
+                cancel()
+            }
+            else {
+                finish()
+            }
         }
     }
     
