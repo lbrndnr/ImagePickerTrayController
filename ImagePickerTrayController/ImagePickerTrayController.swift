@@ -81,8 +81,10 @@ public class ImagePickerTrayController: UIViewController {
         return controller
     }()
     
-    fileprivate var assets = [PHAsset]()
+    fileprivate var interactiveDismissal: InteractiveDismissal?
     
+    fileprivate let imageManager = PHCachingImageManager()
+    fileprivate var assets = [PHAsset]()
     fileprivate lazy var requestOptions: PHImageRequestOptions = {
         let options = PHImageRequestOptions()
         options.deliveryMode = .highQualityFormat
@@ -90,8 +92,6 @@ public class ImagePickerTrayController: UIViewController {
         
         return options
     }()
-    
-    fileprivate let imageManager = PHCachingImageManager()
     
     public var allowsMultipleSelection = true {
         didSet {
@@ -101,12 +101,10 @@ public class ImagePickerTrayController: UIViewController {
         }
     }
     
-    fileprivate let height: CGFloat
-    
     fileprivate var imageSize: CGSize = .zero
+    let trayHeight: CGFloat
 
     fileprivate let actionCellWidth: CGFloat = 162
-    
     fileprivate weak var actionCell: ActionCell?
 
     public fileprivate(set) var actions = [ImagePickerAction]()
@@ -124,9 +122,12 @@ public class ImagePickerTrayController: UIViewController {
     // MARK: - Initialization
     
     public init() {
-        self.height = 216
+        self.trayHeight = 216
         
         super.init(nibName: nil, bundle: nil)
+        
+        modalPresentationStyle = .custom
+        transitioningDelegate = self
     }
     
     public required init?(coder aDecoder: NSCoder) {
@@ -139,7 +140,7 @@ public class ImagePickerTrayController: UIViewController {
         super.loadView()
         
         view.addSubview(collectionView)
-        collectionView.heightAnchor.constraint(equalToConstant: height).isActive = true
+        collectionView.heightAnchor.constraint(equalToConstant: trayHeight).isActive = true
         collectionView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         collectionView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
@@ -147,7 +148,7 @@ public class ImagePickerTrayController: UIViewController {
         
         let numberOfRows = (UIDevice.current.userInterfaceIdiom == .pad) ? 3 : 2
         let totalItemSpacing = CGFloat(numberOfRows-1)*itemSpacing + collectionView.contentInset.vertical
-        let side = round((self.height-totalItemSpacing)/CGFloat(numberOfRows))
+        let side = round((self.trayHeight-totalItemSpacing)/CGFloat(numberOfRows))
         self.imageSize = CGSize(width: side, height: side)
     }
     
@@ -223,45 +224,6 @@ public class ImagePickerTrayController: UIViewController {
     
     @objc fileprivate func takePicture() {
         cameraController.takePicture()
-    }
-    
-    // MARK: - Presentation
-    
-    public func show(in superview: UIView, animated: Bool = true) {
-        superview.addSubview(view)
-        
-        let superframe = superview.frame
-        let size = CGSize(width: superframe.width, height: height)
-        view.frame = CGRect(origin: CGPoint(x: superframe.minX, y: superframe.maxY), size: size)
-        
-        let duration = animated ? animationDuration : nil
-        post(name: ImagePickerTrayWillShow, frame: view.frame, duration: duration)
-        
-        let finalFrame = CGRect(origin: CGPoint(x: superframe.minX, y: superframe.maxY-height), size: size)
-        UIView.animate(withDuration: duration ?? 0, animations: {
-            self.view.frame = finalFrame
-        }, completion: { _ in
-            self.post(name: ImagePickerTrayDidShow, frame: finalFrame, duration: nil)
-        })
-    }
-    
-    public func hide(animated: Bool = true) {
-        guard let superframe = view.superview?.frame else {
-            return
-        }
-        
-        let size = CGSize(width: superframe.width, height: height)
-        let finalFrame = CGRect(origin: CGPoint(x: superframe.minX, y: superframe.maxY), size: size)
-        
-        let duration = animated ? animationDuration : nil
-        post(name: ImagePickerTrayWillHide, frame: view.frame, duration: duration)
-        
-        UIView.animate(withDuration: duration ?? 0, animations: {
-            self.view.frame = finalFrame
-        }, completion: { _ in
-            self.view.removeFromSuperview()
-            self.post(name: ImagePickerTrayDidHide, frame: finalFrame, duration: nil)
-        })
     }
     
     // MARK: -
@@ -402,6 +364,39 @@ extension ImagePickerTrayController: UIImagePickerControllerDelegate, UINavigati
         if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
             delegate?.controller?(self, didTakeImage: image)
         }
+    }
+    
+}
+
+// MARK: - UIViewControllerTransitioningDelegate
+
+extension ImagePickerTrayController: UIViewControllerTransitioningDelegate {
+    
+    @objc fileprivate func didRecognizePan(gestureRecognizer: UIPanGestureRecognizer) {
+        if gestureRecognizer.state == .changed {
+            let start = gestureRecognizer.location(in: gestureRecognizer.view).y
+            let translation = gestureRecognizer.translation(in: gestureRecognizer.view)
+            let end = start + translation.y
+            let threshold = view.bounds.maxY - trayHeight
+            
+            if start < threshold && end >= threshold {
+                dismiss(animated: true, completion: nil)
+            }
+        }
+    }
+    
+    public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        interactiveDismissal = InteractiveDismissal(trayController: self)
+        
+        return AnimationController(transition: .presentation(interactiveDismissal!.gestureRecognizer))
+    }
+    
+    public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return AnimationController(transition: .dismissal)
+    }
+    
+    public func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+        return (interactiveDismissal?.hasBeenRecognized ?? false) ? interactiveDismissal : nil
     }
     
 }

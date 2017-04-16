@@ -69,12 +69,12 @@ class ViewController: UIViewController {
         controller.add(action: .libraryAction { _ in
             print("Show Library")
         })
-        controller.show(in: view)
+        present(controller, animated: true, completion: nil)
         imagePickerTrayController = controller
     }
     
     fileprivate func hideImagePickerTray() {
-        imagePickerTrayController?.hide()
+        imagePickerTrayController?.dismiss(animated: true, completion: nil)
         imagePickerTrayController = nil
     }
     
