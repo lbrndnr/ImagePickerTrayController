@@ -81,8 +81,6 @@ public class ImagePickerTrayController: UIViewController {
         return controller
     }()
     
-    fileprivate var interactiveDismissal: InteractiveDismissal?
-    
     fileprivate let imageManager = PHCachingImageManager()
     fileprivate var assets = [PHAsset]()
     fileprivate lazy var requestOptions: PHImageRequestOptions = {
@@ -119,6 +117,8 @@ public class ImagePickerTrayController: UIViewController {
     
     public var delegate: ImagePickerTrayControllerDelegate?
     
+    private var transitionController: TransitionController?
+    
     // MARK: - Initialization
     
     public init() {
@@ -126,8 +126,9 @@ public class ImagePickerTrayController: UIViewController {
         
         super.init(nibName: nil, bundle: nil)
         
+        transitionController = TransitionController(trayController: self)
         modalPresentationStyle = .custom
-        transitioningDelegate = self
+        transitioningDelegate = transitionController
     }
     
     public required init?(coder aDecoder: NSCoder) {
@@ -364,39 +365,6 @@ extension ImagePickerTrayController: UIImagePickerControllerDelegate, UINavigati
         if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
             delegate?.controller?(self, didTakeImage: image)
         }
-    }
-    
-}
-
-// MARK: - UIViewControllerTransitioningDelegate
-
-extension ImagePickerTrayController: UIViewControllerTransitioningDelegate {
-    
-    @objc fileprivate func didRecognizePan(gestureRecognizer: UIPanGestureRecognizer) {
-        if gestureRecognizer.state == .changed {
-            let start = gestureRecognizer.location(in: gestureRecognizer.view).y
-            let translation = gestureRecognizer.translation(in: gestureRecognizer.view)
-            let end = start + translation.y
-            let threshold = view.bounds.maxY - trayHeight
-            
-            if start < threshold && end >= threshold {
-                dismiss(animated: true, completion: nil)
-            }
-        }
-    }
-    
-    public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        interactiveDismissal = InteractiveDismissal(trayController: self)
-        
-        return AnimationController(transition: .presentation(interactiveDismissal!.gestureRecognizer))
-    }
-    
-    public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        return AnimationController(transition: .dismissal)
-    }
-    
-    public func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
-        return (interactiveDismissal?.gestureWasRecognized ?? false) ? interactiveDismissal : nil
     }
     
 }

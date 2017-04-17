@@ -53,9 +53,9 @@ extension AnimationController: UIViewControllerAnimatedTransitioning {
         to.view.transform = CGAffineTransform(translationX: 0, y: to.trayHeight)
         
         let duration = transitionDuration(using: transitionContext)
-        UIView.animateKeyframes(withDuration: duration, delay: 0, options: .allowUserInteraction, animations: {
+        UIView.animate(withDuration: duration, delay: 0, options: .allowUserInteraction, animations: {
             to.view.transform = .identity
-        }, completion: { finished in
+        }, completion: { _ in
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         })
     }
@@ -67,11 +67,11 @@ extension AnimationController: UIViewControllerAnimatedTransitioning {
         }
         
         let duration = transitionDuration(using: transitionContext)
-        UIView.animateKeyframes(withDuration: duration, delay: 0, options: .allowUserInteraction, animations: { 
-            from.view.transform = CGAffineTransform(translationX: 0, y: from.trayHeight)
-        }, completion: { finished in
-            if finished {
-                from.view.removeFromSuperview()
+        UIView.animate(withDuration: duration, delay: 0, options: .allowUserInteraction, animations: {
+            from.view.frame.origin.y += from.trayHeight
+        }, completion: { _ in
+            if !transitionContext.transitionWasCancelled {
+//                from.view.removeFromSuperview()
             }
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         })

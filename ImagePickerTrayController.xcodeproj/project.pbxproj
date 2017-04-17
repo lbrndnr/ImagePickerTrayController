@@ -24,7 +24,7 @@
 		4970E58F1DB0E0410078ED23 /* ImagePickerTrayController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4970E5881DB0E0410078ED23 /* ImagePickerTrayController.framework */; };
 		4970E5901DB0E0410078ED23 /* ImagePickerTrayController.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4970E5881DB0E0410078ED23 /* ImagePickerTrayController.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4970E5961DB0E0550078ED23 /* ImagePickerTrayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4970E5951DB0E0550078ED23 /* ImagePickerTrayController.swift */; };
-		49F5E3821EA37CDB00935824 /* InteractiveDismissal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49F5E3811EA37CDB00935824 /* InteractiveDismissal.swift */; };
+		49A9DB6C1EA4B84B008DD8FB /* TransitionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49A9DB6B1EA4B84B008DD8FB /* TransitionController.swift */; };
 		49FC9BD11DEB472900AC1AA8 /* UIEdgeInsetsExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49FC9BD01DEB472900AC1AA8 /* UIEdgeInsetsExtensions.swift */; };
 /* End PBXBuildFile section */
 
@@ -74,7 +74,7 @@
 		4970E58A1DB0E0410078ED23 /* ImagePickerTrayController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImagePickerTrayController.h; sourceTree = "<group>"; };
 		4970E58B1DB0E0410078ED23 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4970E5951DB0E0550078ED23 /* ImagePickerTrayController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePickerTrayController.swift; sourceTree = "<group>"; };
-		49F5E3811EA37CDB00935824 /* InteractiveDismissal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InteractiveDismissal.swift; sourceTree = "<group>"; };
+		49A9DB6B1EA4B84B008DD8FB /* TransitionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitionController.swift; sourceTree = "<group>"; };
 		49FC9BD01DEB472900AC1AA8 /* UIEdgeInsetsExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIEdgeInsetsExtensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -177,7 +177,7 @@
 			isa = PBXGroup;
 			children = (
 				491E96B41EA2A62900603E56 /* AnimationController.swift */,
-				49F5E3811EA37CDB00935824 /* InteractiveDismissal.swift */,
+				49A9DB6B1EA4B84B008DD8FB /* TransitionController.swift */,
 				491D5EB31DE451CD007EC01A /* ImagePickerAction.swift */,
 				4970E5951DB0E0550078ED23 /* ImagePickerTrayController.swift */,
 				490925561DE4E600001027EC /* Cells */,
@@ -365,11 +365,11 @@
 				4909255A1DE4E600001027EC /* ActionCell.swift in Sources */,
 				492715FA1DE7835200A9DD5B /* UIImageExtensions.swift in Sources */,
 				491D5EB41DE451CD007EC01A /* ImagePickerAction.swift in Sources */,
+				49A9DB6C1EA4B84B008DD8FB /* TransitionController.swift in Sources */,
 				4970E5961DB0E0550078ED23 /* ImagePickerTrayController.swift in Sources */,
 				4909255B1DE4E600001027EC /* CameraCell.swift in Sources */,
 				4909255C1DE4E600001027EC /* ImageCell.swift in Sources */,
 				491E96B51EA2A62900603E56 /* AnimationController.swift in Sources */,
-				49F5E3821EA37CDB00935824 /* InteractiveDismissal.swift in Sources */,
 				49FC9BD11DEB472900AC1AA8 /* UIEdgeInsetsExtensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
