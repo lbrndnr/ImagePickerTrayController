@@ -12,6 +12,8 @@ class TransitionController: NSObject {
     
     fileprivate weak var trayController: ImagePickerTrayController?
     
+    var allowsInteractiveTransition = true
+    
     fileprivate let gestureRecognizer = UIPanGestureRecognizer()
     fileprivate var interactiveTransition: UIPercentDrivenInteractiveTransition?
     fileprivate var panDirection: CGFloat = 0
@@ -42,15 +44,15 @@ class TransitionController: NSObject {
 
 extension TransitionController: UIViewControllerTransitioningDelegate {
     
-    public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return AnimationController(transition: .presentation(gestureRecognizer))
     }
     
-    public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return AnimationController(transition: .dismissal)
     }
     
-    public func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+    func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
         return interactiveTransition
     }
     
@@ -60,7 +62,11 @@ extension TransitionController: UIViewControllerTransitioningDelegate {
 
 extension TransitionController: UIGestureRecognizerDelegate {
     
-    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return allowsInteractiveTransition
+    }
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }
     

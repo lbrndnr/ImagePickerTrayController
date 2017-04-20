@@ -91,6 +91,7 @@ public class ImagePickerTrayController: UIViewController {
         return options
     }()
     
+    
     public var allowsMultipleSelection = true {
         didSet {
             if isViewLoaded {
@@ -116,7 +117,17 @@ public class ImagePickerTrayController: UIViewController {
     }
     
     public var delegate: ImagePickerTrayControllerDelegate?
-    
+
+    /// If set to `true` the tray can be dragged down in order to dismiss it
+    /// Defaults to `true`
+    public var allowsInteractivePresentation: Bool {
+        get {
+            return transitionController?.allowsInteractiveTransition ?? false
+        }
+        set {
+            transitionController?.allowsInteractiveTransition = newValue
+        }
+    }
     private var transitionController: TransitionController?
     
     // MARK: - Initialization
